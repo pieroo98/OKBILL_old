@@ -337,7 +337,7 @@ const SetupScreen = ({ route }) => {
                                     return (
                                         <TouchableOpacity key={item.chiave} onPress={() => { handlePress(item) }}>
                                             <View key={i} style={[styles.item, { backgroundColor: '#121212', paddingBottom: 20 }]}>
-                                                <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginTop: 10, borderRadius: 50, marginLeft: spazio, marginBottom: 28, borderWidth: 1, borderColor: item.bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item.chiave ? '#54d169' : '#1D1D1D' }}>
+                                                <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginTop: 10, borderRadius: 50, marginLeft: spazio, marginBottom: 18, borderWidth: 1, borderColor: item.bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item.chiave ? '#54d169' : '#1D1D1D' }}>
                                                     <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{item.persona}</Text>
                                                     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                                                         <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{item.soldi}</Text>

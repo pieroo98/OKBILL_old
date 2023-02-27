@@ -7,10 +7,10 @@ const vett = [{ val: 0, press: false }, { val: 5, press: false }, { val: 10, pre
 
 const ConfigureScreen = ({ route }) => {
     const navigation = useNavigation();
-    const [conto, setConto] = useState(parseFloat(route.params.conto));
+    const [conto, setConto] = useState(parseFloat(route.params.conto).toFixed(2));
     const [persone, setPersone] = useState(2);
     const [mancia, setMancia] = useState(0);
-    const [totale, setTotale] = useState(parseFloat(route.params.conto));
+    const [totale, setTotale] = useState(parseFloat(route.params.conto).toFixed(2));
     const [quotaxPers, setQuotaxPers] = useState(parseFloat(totale/persone).toFixed(2));
     let coloreConto, colorePersone, coloreMancia, coloreTotale, coloreQuota, manciaOpaco;
     coloreConto = colorePersone = coloreMancia = coloreTotale = coloreQuota = 'white';
