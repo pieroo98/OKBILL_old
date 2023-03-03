@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Keyboard, Dimensions, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -104,6 +104,7 @@ const SetupScreen = ({ route }) => {
     const [locked, setLocked] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
     const { width } = Dimensions.get('window');
+    const scrollViewRef = useRef();
 
     const handlePress = (valore) => {
         let esporta = { persona: valore.persona, chiave: valore.chiave, soldi: valore.soldi, bloccato: valore.bloccato };
@@ -210,6 +211,14 @@ const SetupScreen = ({ route }) => {
         setActiveIndex(currentIndex);
     };
 
+    const handleDotPress = (index) => {
+        setActiveIndex(index);
+        scrollViewRef.current.scrollTo({
+          x: index * width,
+          animated: true,
+        });
+      };
+
     const navigation = useNavigation();
     let coloreConto, colorePersone, coloreMancia, coloreTotale, coloreQuota, manciaOpaco;
     coloreConto = colorePersone = coloreMancia = coloreTotale = coloreQuota = 'white';
@@ -245,6 +254,7 @@ const SetupScreen = ({ route }) => {
             <ScrollView style={{ backgroundColor: '#222222' }}>
                 <View style={{ backgroundColor: '#121212' }}>
                     <ScrollView
+                        ref={scrollViewRef}
                         onScroll={handleScroll}
                         horizontal
                         pagingEnabled
@@ -379,13 +389,14 @@ const SetupScreen = ({ route }) => {
                     </ScrollView>
                     <View style={[styles.pagination, { marginTop: 30 }]}>
                         {finalState.map((_, index) => (
-                            <View
-                                key={index}
-                                style={[
-                                    styles.dot,
-                                    activeIndex === index && styles.activeDot,
-                                ]}
-                            />
+                            <TouchableOpacity
+                            key={index}
+                            style={[
+                              styles.dot,
+                              activeIndex === index && styles.activeDot,
+                            ]}
+                            onPress={() => handleDotPress(index)}
+                          />
                         ))}
                     </View>
                 </View>
