@@ -75,12 +75,15 @@ const Riepilogo = ({ route }) => {
             <View style={{ backgroundColor: '#121212', paddingTop: 20 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30 }}>
                     <View style={{ width: 127, height: 41, backgroundColor: '#1D1D1D', marginLeft: 20, borderRadius: 20, borderColor: '#54d169', borderWidth: 1 }}>
-                        <TouchableOpacity onPress={() => navigation.navigate('setup', { conto: route.params.conto, persone: route.params.persone, mancia: route.params.mancia, quotaxPers: route.params.quotaxPers, totale: route.params.totale })} style={{ justifyContent: 'center', flexDirection: 'row', }}>
+                        <TouchableOpacity onPress={() => navigation.navigate('setup')} style={{ justifyContent: 'center', flexDirection: 'row', }}>
                             <Text style={[styles.menuItemText, { paddingVertical: 7 }]}>Indietro</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={{ width: 127, height: 41, backgroundColor: '#54d169', marginRight: 20, borderRadius: 20, borderColor: '#54d169', borderWidth: 1 }}>
-                        <TouchableOpacity onPress={() => navigation.navigate('loading')} style={{ justifyContent: 'center', flexDirection: 'row', marginBottom: 0 }}>
+                        <TouchableOpacity onPress={() =>{
+                        
+                        navigation.setParams({conto : '', persone: 2, totale : 0, mancia: 0, quotaxPers: 0});
+                         navigation.reset({ index: 0, routes: [{name:'loading'}]}) }} style={{ justifyContent: 'center', flexDirection: 'row', marginBottom: 0 }}>
                             <Text style={[styles.menuItemText, { paddingVertical: 7 }]}>Ricomincia</Text>
                         </TouchableOpacity>
                     </View>

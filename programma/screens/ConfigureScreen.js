@@ -12,6 +12,8 @@ const ConfigureScreen = ({ route }) => {
     const [mancia, setMancia] = useState(0);
     const [totale, setTotale] = useState(parseFloat(route.params.conto).toFixed(2));
     const [quotaxPers, setQuotaxPers] = useState(parseFloat(totale/persone).toFixed(2));
+    const [isSubmittedLoading, setIsSubmittedLoading] = useState(false);
+    const [isSubmittedSetup, setIsSubmittedSetup] = useState(false);
     let coloreConto, colorePersone, coloreMancia, coloreTotale, coloreQuota, manciaOpaco;
     coloreConto = colorePersone = coloreMancia = coloreTotale = coloreQuota = 'white';
     if (conto > 0)
@@ -120,6 +122,26 @@ const ConfigureScreen = ({ route }) => {
         }
     };
 
+    const toggleIsSubmittedLoading = () => {
+        setIsSubmittedLoading(value => !value);
+      };
+    
+    useEffect(() => {
+    if (isSubmittedLoading === true) {
+        navigation.navigate('loading');
+    }
+    }, [isSubmittedLoading]);
+
+    const toggleIsSubmittedSetup = () => {
+        setIsSubmittedSetup(value => !value);
+      };
+    
+    useEffect(() => {
+    if (isSubmittedSetup === true) {
+        navigation.navigate('setup', { conto: route.params.conto, persone: persone, mancia: mancia, quotaxPers: quotaxPers, totale: totale });   
+    }
+    }, [isSubmittedSetup]);
+
     return (
         <>
             <ScrollView style={{ backgroundColor: '#222222' }}  >
@@ -212,12 +234,12 @@ const ConfigureScreen = ({ route }) => {
             <View style={{ backgroundColor: '#222222' }} >
                 <View style={[styles.rigeSeparate, { marginBottom: 30, backgroundColor: '#222222', paddingTop: 20 }]} >
                     <View style={[styles.formaBottone, { backgroundColor: '#222222', marginLeft: 20 }]}>
-                        <TouchableOpacity onPress={() => navigation.navigate('loading')} style={styles.posizioneBottone}>
+                        <TouchableOpacity onPress={toggleIsSubmittedLoading} style={styles.posizioneBottone}>
                             <Text style={styles.menuItemText}>Indietro</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={[styles.formaBottone, { backgroundColor: '#54d169', marginRight: 20 }]}>
-                        <TouchableOpacity onPress={() => navigation.navigate('setup', { conto: conto, persone: persone, mancia: mancia, quotaxPers: quotaxPers, totale: totale })} style={styles.posizioneBottone} >
+                        <TouchableOpacity onPress={toggleIsSubmittedSetup} style={styles.posizioneBottone} >
                             <Text style={styles.menuItemText}>Calcola</Text>
                         </TouchableOpacity>
                     </View>

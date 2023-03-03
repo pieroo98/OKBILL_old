@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Keyboard, Dimensions } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Keyboard, Dimensions, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -33,16 +33,43 @@ const ModificaPrezzo = ({ onSubmit, prezzo, setPrezzo, itemKey, locked }) => {
 }
 
 const ModifyByOne = ({ setCambiatoPrezzo, itemState, setItemState, prezzo, setPrezzo, itemTmp, totale }) => {
+    let segnoMeno = false;
+    let regex = /[a-zA-Z]+$/;
+    let filtered = prezzo;
+    if ((isNaN(prezzo) || prezzo == " ") && prezzo != 0) {
+        segnoMeno = true;
+        filtered = 0;
+    }
+    if (typeof prezzo === "string" && prezzo.includes("-")) {
+        segnoMeno = true;
+        filtered = 0;
+    }
+
+    else if (regex.test(prezzo)) {
+        segnoMeno = true;
+        filtered = 0;
+    }
+    let prezzoSingle = parseFloat(filtered.toFixed(2));
+    if (segnoMeno) {
+        prezzoSingle = itemState.filter((i) => !i.bloccato).map((i) => i.soldi)[0];
+        Alert.alert(
+            'Errore di formato',
+            'scrivi il prezzo correttamente per continuare',
+            [
+                { text: 'OK', onPress: () => { } },
+            ]
+        );
+    }
+
     let personeTotal = itemState.length;
-    let prezzoTotal = parseInt(totale);
-    let prezzoSingle = parseFloat(prezzo.toFixed(2));
+    let prezzoTotal = parseFloat(totale);
     let quantiPrezzoBloccato = itemState.filter((i) => i.bloccato).map((i) => i.soldi);
     let prezziBloccati = 0.0;
     for (const c of quantiPrezzoBloccato) {
         prezziBloccati += c;
     }
     let prezzoRestanti = parseFloat(((prezzoTotal - prezzoSingle - prezziBloccati) / (personeTotal - 1 - quantiPrezzoBloccato.length)).toFixed(2));
-    setPrezzo(() => String(parseFloat(prezzo.toFixed(2))));
+    setPrezzo(() => String(parseFloat(filtered.toFixed(2))));
 
     setItemState(itemState.map((val) => {
         if (val.chiave == itemTmp.chiave) {
@@ -217,101 +244,18 @@ const SetupScreen = ({ route }) => {
         <>
             <ScrollView style={{ backgroundColor: '#222222' }}>
                 <View style={{ backgroundColor: '#121212' }}>
-                        <ScrollView
-                            onScroll={handleScroll}
-                            horizontal
-                            pagingEnabled
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.scrollViewContent}
-                        >
-                            {finalState.map((item, i) => {
-                                if (item.length == 4) {
-                                    return (
-                                        <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between' }} >
-                                            <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20, marginBottom: 18 }}>
-                                                <TouchableOpacity key={item[0].chiave} onPress={() => { handlePress(item[0]) }}>
-                                                    <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item[0].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[0].chiave ? '#54d169' : '#1D1D1D' }} >
-                                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{item[0].persona}</Text>
-                                                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{item[0].soldi}</Text>
-                                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{' €'}</Text>
-                                                        </View>
-                                                    </View>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity key={item[1].chiave} onPress={() => { handlePress(item[1]) }}>
-                                                    <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, marginBottom: 20, marginTop: 20, borderWidth: 1, borderColor: item[1].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[1].chiave ? '#54d169' : '#1D1D1D' }} >
-                                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{item[1].persona}</Text>
-                                                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{item[1].soldi}</Text>
-                                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{' €'}</Text>
-                                                        </View>
-                                                    </View>
-                                                </TouchableOpacity>
-                                            </View>
-                                            <View key={item[2].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20, marginBottom: 18 }}>
-                                                <TouchableOpacity key={item[2].chiave} onPress={() => { handlePress(item[2]) }}>
-                                                    <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item[2].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[2].chiave ? '#54d169' : '#1D1D1D' }} >
-                                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{item[2].persona}</Text>
-                                                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{item[2].soldi}</Text>
-                                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{' €'}</Text>
-                                                        </View>
-                                                    </View>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity key={item[3].chiave} onPress={() => { handlePress(item[3]) }}>
-                                                    <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, marginBottom: 20, marginTop: 20, borderWidth: 1, borderColor: item[3].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[3].chiave ? '#54d169' : '#1D1D1D' }} >
-                                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[3].bloccato ? 0.5 : 1 }}>{item[3].persona}</Text>
-                                                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[3].bloccato ? 0.5 : 1 }}>{item[3].soldi}</Text>
-                                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[3].bloccato ? 0.5 : 1 }}>{' €'}</Text>
-                                                        </View>
-                                                    </View>
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    )
-                                }
-                                else if (item.length == 3) {
-                                    return (
-                                        <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between' }} >
-                                            <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 10, marginBottom: 28 }}>
-                                                <TouchableOpacity key={item[0].chiave} onPress={() => { handlePress(item[0]) }}>
-                                                    <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item[0].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[0].chiave ? '#54d169' : '#1D1D1D' }} >
-                                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{item[0].persona}</Text>
-                                                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{item[0].soldi}</Text>
-                                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{' €'}</Text>
-                                                        </View>
-                                                    </View>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity key={item[1].chiave} onPress={() => { handlePress(item[1]) }}>
-                                                    <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, marginBottom: 20, marginTop: 20, borderWidth: 1, borderColor: item[1].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[1].chiave ? '#54d169' : '#1D1D1D' }} >
-                                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{item[1].persona}</Text>
-                                                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{item[1].soldi}</Text>
-                                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{' €'}</Text>
-                                                        </View>
-                                                    </View>
-                                                </TouchableOpacity>
-                                            </View>
-                                            <View key={item[2].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20, marginBottom: 18 }}>
-                                                <TouchableOpacity key={item[2].chiave} onPress={() => { handlePress(item[2]) }}>
-                                                    <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item[2].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[2].chiave ? '#54d169' : '#1D1D1D' }} >
-                                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{item[2].persona}</Text>
-                                                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{item[2].soldi}</Text>
-                                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{' €'}</Text>
-                                                        </View>
-                                                    </View>
-                                                </TouchableOpacity>
-
-                                            </View>
-                                        </View>
-                                    )
-                                }
-                                else if (item.length == 2) {
-                                    return (
-                                        <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 10, marginBottom: 18 }}>
+                    <ScrollView
+                        onScroll={handleScroll}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollViewContent}
+                    >
+                        {finalState.map((item, i) => {
+                            if (item.length == 4) {
+                                return (
+                                    <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between' }} >
+                                        <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20, marginBottom: 18 }}>
                                             <TouchableOpacity key={item[0].chiave} onPress={() => { handlePress(item[0]) }}>
                                                 <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item[0].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[0].chiave ? '#54d169' : '#1D1D1D' }} >
                                                     <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{item[0].persona}</Text>
@@ -331,25 +275,108 @@ const SetupScreen = ({ route }) => {
                                                 </View>
                                             </TouchableOpacity>
                                         </View>
-                                    )
-                                }
-                                else {
-                                    return (
-                                        <TouchableOpacity key={item.chiave} onPress={() => { handlePress(item) }}>
-                                            <View key={i} style={[styles.item, { backgroundColor: '#121212', paddingBottom: 20 }]}>
-                                                <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginTop: 10, borderRadius: 50, marginLeft: spazio, marginBottom: 18, borderWidth: 1, borderColor: item.bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item.chiave ? '#54d169' : '#1D1D1D' }}>
-                                                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{item.persona}</Text>
+                                        <View key={item[2].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20, marginBottom: 18 }}>
+                                            <TouchableOpacity key={item[2].chiave} onPress={() => { handlePress(item[2]) }}>
+                                                <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item[2].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[2].chiave ? '#54d169' : '#1D1D1D' }} >
+                                                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{item[2].persona}</Text>
                                                     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                                        <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{item.soldi}</Text>
-                                                        <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{' €'}</Text>
+                                                        <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{item[2].soldi}</Text>
+                                                        <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{' €'}</Text>
                                                     </View>
+                                                </View>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity key={item[3].chiave} onPress={() => { handlePress(item[3]) }}>
+                                                <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, marginBottom: 20, marginTop: 20, borderWidth: 1, borderColor: item[3].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[3].chiave ? '#54d169' : '#1D1D1D' }} >
+                                                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[3].bloccato ? 0.5 : 1 }}>{item[3].persona}</Text>
+                                                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                                        <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[3].bloccato ? 0.5 : 1 }}>{item[3].soldi}</Text>
+                                                        <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[3].bloccato ? 0.5 : 1 }}>{' €'}</Text>
+                                                    </View>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                )
+                            }
+                            else if (item.length == 3) {
+                                return (
+                                    <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between' }} >
+                                        <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 10, marginBottom: 28 }}>
+                                            <TouchableOpacity key={item[0].chiave} onPress={() => { handlePress(item[0]) }}>
+                                                <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item[0].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[0].chiave ? '#54d169' : '#1D1D1D' }} >
+                                                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{item[0].persona}</Text>
+                                                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                                        <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{item[0].soldi}</Text>
+                                                        <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{' €'}</Text>
+                                                    </View>
+                                                </View>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity key={item[1].chiave} onPress={() => { handlePress(item[1]) }}>
+                                                <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, marginBottom: 20, marginTop: 20, borderWidth: 1, borderColor: item[1].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[1].chiave ? '#54d169' : '#1D1D1D' }} >
+                                                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{item[1].persona}</Text>
+                                                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                                        <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{item[1].soldi}</Text>
+                                                        <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{' €'}</Text>
+                                                    </View>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View key={item[2].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20, marginBottom: 18 }}>
+                                            <TouchableOpacity key={item[2].chiave} onPress={() => { handlePress(item[2]) }}>
+                                                <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item[2].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[2].chiave ? '#54d169' : '#1D1D1D' }} >
+                                                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{item[2].persona}</Text>
+                                                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                                        <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{item[2].soldi}</Text>
+                                                        <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[2].bloccato ? 0.5 : 1 }}>{' €'}</Text>
+                                                    </View>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                        </View>
+                                    </View>
+                                )
+                            }
+                            else if (item.length == 2) {
+                                return (
+                                    <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 10, marginBottom: 18 }}>
+                                        <TouchableOpacity key={item[0].chiave} onPress={() => { handlePress(item[0]) }}>
+                                            <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item[0].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[0].chiave ? '#54d169' : '#1D1D1D' }} >
+                                                <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{item[0].persona}</Text>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{item[0].soldi}</Text>
+                                                    <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[0].bloccato ? 0.5 : 1 }}>{' €'}</Text>
                                                 </View>
                                             </View>
                                         </TouchableOpacity>
-                                    )
-                                }
-                            })}
-                        </ScrollView>
+                                        <TouchableOpacity key={item[1].chiave} onPress={() => { handlePress(item[1]) }}>
+                                            <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, marginBottom: 20, marginTop: 20, borderWidth: 1, borderColor: item[1].bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item[1].chiave ? '#54d169' : '#1D1D1D' }} >
+                                                <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{item[1].persona}</Text>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{item[1].soldi}</Text>
+                                                    <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item[1].bloccato ? 0.5 : 1 }}>{' €'}</Text>
+                                                </View>
+                                            </View>
+                                        </TouchableOpacity>
+                                    </View>
+                                )
+                            }
+                            else {
+                                return (
+                                    <TouchableOpacity key={item.chiave} onPress={() => { handlePress(item) }}>
+                                        <View key={i} style={[styles.item, { backgroundColor: '#121212', paddingBottom: 20 }]}>
+                                            <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginTop: 10, borderRadius: 50, marginLeft: spazio, marginBottom: 18, borderWidth: 1, borderColor: item.bloccato ? 'white' : singleKey.coloreVerde && singleKey.chiave == item.chiave ? '#54d169' : '#1D1D1D' }}>
+                                                <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{item.persona}</Text>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                                    <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{item.soldi}</Text>
+                                                    <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{' €'}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                )
+                            }
+                        })}
+                    </ScrollView>
                     <View style={[styles.pagination, { marginTop: 30 }]}>
                         {finalState.map((_, index) => (
                             <View

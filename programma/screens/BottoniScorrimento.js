@@ -1,25 +1,112 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
-const BottoniScorrimento = ({ conto, navigation }) => {
+const BottoniScorrimento = ({ conto, navigation, setConto }) => {
     const textRef = useRef(null);
+    const [isSubmittedConfig, setIsSubmittedConfig] = useState(false);
+
+    const toggleIsSubmittedConfig = () => {
+        setIsSubmittedConfig(value => !value);
+      };
+    
+    useEffect(() => {
+    if (isSubmittedConfig === true) {
+        setConto(filtered);
+        navigation.setParams({conto : String(filtered)});
+        navigation.navigate('configure', { conto: conto}); 
+    }
+    }, [isSubmittedConfig]);
+
+    let segnoMeno = false;
+    let regex = /[a-zA-Z]+$/;
     useEffect(() => {
         textRef.current?.fadeInUp(2500);
     }, []);
+    let filtered = conto;
 
+    if(isNaN(conto) || conto ==" "){
+        segnoMeno = true;
+                filtered = 0;
+    }
+    if(conto.includes("-")){
+        segnoMeno = true;
+        filtered = 0;
+    }
+    else if(conto.includes(",") && !segnoMeno){
+        let virg = conto.split(",");
+        if(virg[0]=="" && virg.length==2){
+            if( virg[1].includes(".")){
+                segnoMeno = true;
+                filtered = 0;
+            }
+            else {
+                let ok = '0'
+                let ok2 = ok.concat(".").concat(virg[1]);
+                filtered = parseFloat(ok2).toFixed(2);
+            }
+        }
+        else if (virg[0]!="" && virg.length==2){
+            if(virg[0].includes(".") || virg[1].includes(".")){
+                segnoMeno = true;
+                filtered = 0;
+            }
+            else {
+                let ok2 = virg[0].concat(".").concat(virg[1]);
+                filtered = parseFloat(ok2).toFixed(2);
+            }  
+        }
+        else if (virg.length>2){
+            segnoMeno= true;
+            filtered = 0;
+        }
+    }
+    
+    else if (conto.includes(".") && !segnoMeno){
+        let virg = conto.split(".");
+        if(virg[0]=="" && virg.length==2){
+            let ok = '0'
+            let ok2 = ok.concat(".").concat(virg[1]);
+            filtered = parseFloat(ok2).toFixed(2);
+        }
+        else if (virg[0]!="" && virg.length==2){
+            let ok2 = virg[0].concat(".").concat(virg[1]);
+            filtered = parseFloat(ok2).toFixed(2);
+        }
+        else if(virg.length>2){
+            segnoMeno= true;
+            filtered = 0;
+        }
+    }
+
+    else if (regex.test(conto)){
+        segnoMeno= true;
+        filtered = 0;
+    }
+    
+    const handlePress = () => {
+        Alert.alert(
+          'Errore di formato',
+          'scrivi il conto correttamente per continuare',
+          [
+            { text: 'OK', onPress: () => {} },
+          ]
+        );
+      };
     return (
         <>
             <View>
                 <Animatable.View ref={textRef}>
-                    {conto ? 
+                    {filtered ? 
                     <View style={[styles.menuItem,{backgroundColor:'#54D169'}]}>
-                        <TouchableOpacity onPress={() => navigation.navigate('configure', { conto: conto })} >
+                        <TouchableOpacity onPress={toggleIsSubmittedConfig} >
                             <Text style={styles.menuItemText}>Continua</Text>
                         </TouchableOpacity>
                     </View> :
                     <View style={[styles.menuItem,{backgroundColor:'#94eba3'}]}>
-                        <Text style={styles.menuItemText}>Continua</Text>
+                        <TouchableOpacity onPress={handlePress}>
+                            <Text style={styles.menuItemText}>Continua</Text>
+                        </TouchableOpacity>
                     </View>}
                     <TouchableOpacity>
                         <Text style={styles.tutorial} >Tutorial</Text>
