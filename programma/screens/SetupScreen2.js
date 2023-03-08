@@ -10,10 +10,10 @@ const GeneralQuote = ({ spazio, item, flag, totale }) => {
             <View style={{ flexDirection: 'row', justifyContent: flag ? 'space-between' : 'center' }}>
                 {flag ? item.soldi - 1 >= 0 ?
                     <TouchableOpacity style={{ paddingHorizontal: 10 }}>
-                        <Icon name="minus" size={21} color="white" />
+                        <Icon name="minus" size={21} color="#54d169" />
                     </TouchableOpacity> :
                     <View style={{ paddingHorizontal: 10 }}>
-                        <Icon name="minus" size={21} color="white" />
+                        <Icon name="minus" size={21} color="#54d169" />
                     </View>
                     : null}
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -190,20 +190,42 @@ const SetupScreen2 = ({ route }) => {
                                 if (item.length === 2) {
                                     return (
                                         <View key={item[0].chiave} >
-                                            {item[0].selezionato ?
+                                            {item[0].selezionato && item[0].chiave !== 0 ?
                                                 <View style={{ backgroundColor: '#121212', flexDirection: 'row', marginBottom: 10, marginTop: -20 }}>
-                                                    <TouchableOpacity onPress={() => cancellaQuota(item[0])} style={{marginLeft: spazio+ 169/2 - 20}} >
-                                                        <Icon name="trash-o" size={21} color="red" />
+                                                    <TouchableOpacity onPress={() => cancellaQuota(item[0])} style={{ marginLeft: spazio + 169 / 2 - 40 }} >
+                                                        <View style={{ borderRadius: 50, borderWidth: 1, borderColor: 'red', padding: 8, paddingHorizontal: 10 }} >
+                                                            <Icon name="trash-o" size={20} color="white" />
+                                                        </View>
                                                     </TouchableOpacity>
-                                                    <TouchableOpacity onPress={() => bloccaQuota(item[0])} style={{marginLeft: + 15}}>
-                                                        <Icon name="lock" size={21} color="green" />
+                                                    <TouchableOpacity onPress={() => bloccaQuota(item[0])} style={{ marginLeft: + 15 }}>
+                                                        <View style={{ borderRadius: 50, borderWidth: 1, borderColor: '#54d169', padding: 8, paddingHorizontal: 12 }} >
+                                                            <Icon name="lock" size={20} color="white" />
+                                                        </View>
                                                     </TouchableOpacity>
-                                                </View> : null}
+                                                </View> : item[0].selezionato && item[0].chiave == 0 ?
+                                                    <View style={{ backgroundColor: '#121212', flexDirection: 'row', marginBottom: 10, marginTop: -20 }}>
+                                                        <TouchableOpacity onPress={() => cancellaQuota(item[0])} style={{ marginLeft: spazio + 169 / 2 - 10 }} >
+                                                            <Icon name="lock" size={21} color="#54d169" />
+                                                        </TouchableOpacity>
+                                                    </View> : false
+                                            }
+                                            {item[1].selezionato ?
+                                                <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 10, marginTop: -20 }}>
+                                                    <TouchableOpacity onPress={() => cancellaQuota(item[1])} style={{ marginRight: + 20 }} >
+                                                        <View style={{ borderRadius: 50, borderWidth: 1, borderColor: 'red', padding: 8, paddingHorizontal: 10 }} >
+                                                            <Icon name="trash-o" size={20} color="red" />
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity onPress={() => bloccaQuota(item[1])} style={{ marginRight: spazio + 169 / 2 - 40 }}>
+                                                        <View style={{ borderRadius: 50, borderWidth: 1, borderColor: '#54d169', padding: 8, paddingHorizontal: 12 }} >
+                                                            <Icon name="lock" size={20} color="#54d169" />
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                </View> : false}
                                             <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
-                                                {item[0].chiave === 0 ? <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} /> :
-                                                    <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
-                                                        <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
-                                                    </TouchableOpacity>}
+                                                <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
+                                                    <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
+                                                </TouchableOpacity>
                                                 {item[1].soldi === -1 ?
                                                     <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
                                                     item[1].chiave === 0 ? <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} /> :
