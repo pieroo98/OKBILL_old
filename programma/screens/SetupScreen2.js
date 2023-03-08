@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Keyboard, Dimensions, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -10,10 +10,10 @@ const GeneralQuote = ({ spazio, item, flag, totale }) => {
             <View style={{ flexDirection: 'row', justifyContent: flag ? 'space-between' : 'center' }}>
                 {flag ? item.soldi - 1 >= 0 ?
                     <TouchableOpacity style={{ paddingHorizontal: 10 }}>
-                        <Icon name="minus" size={21} color="#54d169" />
+                        <Icon name="minus" size={21} color="white" />
                     </TouchableOpacity> :
                     <View style={{ paddingHorizontal: 10 }}>
-                        <Icon name="minus" size={21} color="#54d169" />
+                        <Icon name="minus" size={21} color="white" />
                     </View>
                     : null}
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -62,7 +62,9 @@ const SetupScreen2 = ({ route }) => {
     const [quoteMod, setQuoteMod] = useState([]);
     const [addQuota, setAddQuota] = useState(true);
     const [due, setDue] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
     const { width } = Dimensions.get('window');
+    const scrollViewRef = useRef();
     const [spazio, setSpazio] = useState(((width - (169 * 2)) / 4));
     let items = [];
     let nomi = ' quote';
@@ -94,27 +96,61 @@ const SetupScreen2 = ({ route }) => {
 
     useEffect(() => {
         if (due) {
-            if (singoli.length % 2 == 0) {
-                for (let i = 0; i < singoli.length; i = i + 2) {
+            if (singoli.length % 4 == 0) {
+                for (let i = 0; i < singoli.length; i = i + 4) {
                     duepervolta.push(singoli[i]);
                     duepervolta.push(singoli[i + 1]);
+                    duepervolta.push(singoli[i + 2]);
+                    duepervolta.push(singoli[i + 3]);
                     final.push(duepervolta);
                     duepervolta = [];
                 }
                 setFinalState(final);
             }
-            else {
+            else if (singoli.length % 4 == 1) {
                 let i = 0;
-                for (i = 0; i < singoli.length - 2; i = i + 2) {
+                for (i = 0; i < singoli.length - 4; i = i + 4) {
                     duepervolta.push(singoli[i]);
                     duepervolta.push(singoli[i + 1]);
+                    duepervolta.push(singoli[i + 2]);
+                    duepervolta.push(singoli[i + 3]);
                     final.push(duepervolta);
                     duepervolta = [];
                 }
                 duepervolta = singoli[i];
                 final.push(duepervolta);
                 setFinalState(final);
-                duepervolta = [];
+            }
+            else if (singoli.length % 4 == 2) {
+                let i = 0;
+                for (i = 0; i < singoli.length - 2; i = i + 4) {
+                    duepervolta.push(singoli[i]);
+                    duepervolta.push(singoli[i + 1]);
+                    duepervolta.push(singoli[i + 2]);
+                    duepervolta.push(singoli[i + 3]);
+                    final.push(duepervolta);
+                    duepervolta = [];
+                }
+                duepervolta.push(singoli[i]);
+                duepervolta.push(singoli[i + 1]);
+                final.push(duepervolta);
+                setFinalState(final);
+            }
+            else if (singoli.length % 4 == 3) {
+                let i = 0;
+                for (i = 0; i < singoli.length - 3; i = i + 4) {
+                    duepervolta.push(singoli[i]);
+                    duepervolta.push(singoli[i + 1]);
+                    duepervolta.push(singoli[i + 2]);
+                    duepervolta.push(singoli[i + 3]);
+                    final.push(duepervolta);
+                    duepervolta = [];
+                }
+                duepervolta.push(singoli[i]);
+                duepervolta.push(singoli[i + 1]);
+                duepervolta.push(singoli[i + 2]);
+                final.push(duepervolta);
+                setFinalState(final);
             }
             setDue(false);
         }
@@ -146,6 +182,20 @@ const SetupScreen2 = ({ route }) => {
         console.log(item);
     }
 
+    const handleScroll = (event) => {
+        const { contentOffset } = event.nativeEvent;
+        const currentIndex = Math.round(contentOffset.x / width);
+        setActiveIndex(currentIndex);
+    };
+
+    const handleDotPress = (index) => {
+        setActiveIndex(index);
+        scrollViewRef.current.scrollTo({
+            x: index * width,
+            animated: true,
+        });
+    };
+
     const navigation = useNavigation();
     let coloreConto, colorePersone, coloreMancia, coloreTotale, manciaOpaco;
     coloreConto = colorePersone = coloreMancia = coloreTotale = 'white';
@@ -171,14 +221,19 @@ const SetupScreen2 = ({ route }) => {
         coloreTotale = '#54D169';
     else if (route.params.totale == 0)
         coloreTotale = 'white';
-
     return (
         <>
             <ScrollView style={{ backgroundColor: '#222222' }}>
                 <View style={{ backgroundColor: '#121212', paddingTop: 15 }}>
-                    <ScrollView style={styles.scrollViewContent} >
+                    <ScrollView ref={scrollViewRef}
+                        onScroll={handleScroll}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollViewContent}
+                    >
                         {finalState.map((item) => {
-                            if (finalState.length === 1) {
+                            if (finalState.length === 1 && item.length === 2) {
                                 return (
                                     <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                         <GeneralQuote spazio={spazio} item={item[0]} flag={false} totale={route.params.totale} />
@@ -187,56 +242,7 @@ const SetupScreen2 = ({ route }) => {
                                 )
                             }
                             else {
-                                if (item.length === 2) {
-                                    return (
-                                        <View key={item[0].chiave} >
-                                            {item[0].selezionato && item[0].chiave !== 0 ?
-                                                <View style={{ backgroundColor: '#121212', flexDirection: 'row', marginBottom: 10, marginTop: -20 }}>
-                                                    <TouchableOpacity onPress={() => cancellaQuota(item[0])} style={{ marginLeft: spazio + 169 / 2 - 40 }} >
-                                                        <View style={{ borderRadius: 50, borderWidth: 1, borderColor: 'red', padding: 8, paddingHorizontal: 10 }} >
-                                                            <Icon name="trash-o" size={20} color="white" />
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity onPress={() => bloccaQuota(item[0])} style={{ marginLeft: + 15 }}>
-                                                        <View style={{ borderRadius: 50, borderWidth: 1, borderColor: '#54d169', padding: 8, paddingHorizontal: 12 }} >
-                                                            <Icon name="lock" size={20} color="white" />
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                </View> : item[0].selezionato && item[0].chiave == 0 ?
-                                                    <View style={{ backgroundColor: '#121212', flexDirection: 'row', marginBottom: 10, marginTop: -20 }}>
-                                                        <TouchableOpacity onPress={() => cancellaQuota(item[0])} style={{ marginLeft: spazio + 169 / 2 - 10 }} >
-                                                            <Icon name="lock" size={21} color="#54d169" />
-                                                        </TouchableOpacity>
-                                                    </View> : false
-                                            }
-                                            {item[1].selezionato ?
-                                                <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 10, marginTop: -20 }}>
-                                                    <TouchableOpacity onPress={() => cancellaQuota(item[1])} style={{ marginRight: + 20 }} >
-                                                        <View style={{ borderRadius: 50, borderWidth: 1, borderColor: 'red', padding: 8, paddingHorizontal: 10 }} >
-                                                            <Icon name="trash-o" size={20} color="red" />
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity onPress={() => bloccaQuota(item[1])} style={{ marginRight: spazio + 169 / 2 - 40 }}>
-                                                        <View style={{ borderRadius: 50, borderWidth: 1, borderColor: '#54d169', padding: 8, paddingHorizontal: 12 }} >
-                                                            <Icon name="lock" size={20} color="#54d169" />
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                </View> : false}
-                                            <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
-                                                <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
-                                                    <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
-                                                </TouchableOpacity>
-                                                {item[1].soldi === -1 ?
-                                                    <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
-                                                    item[1].chiave === 0 ? <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} /> :
-                                                        <TouchableOpacity onLongPress={() => quotaPress(item[1])} >
-                                                            <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} />
-                                                        </TouchableOpacity>}
-                                            </View>
-                                        </View>
-                                    )
-                                }
-                                else {
+                                if (item.length === 1 || item.length === undefined) {
                                     return (
                                         <View key={item.chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                             {item.soldi === -1 ?
@@ -252,12 +258,108 @@ const SetupScreen2 = ({ route }) => {
                                         </View>
                                     )
                                 }
+                                else if (item.length === 2) {
+                                    return (
+                                        <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
+                                            <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
+                                                <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
+                                            </TouchableOpacity>
+                                            {item[1].soldi === -1 ?
+                                                <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
+                                                <TouchableOpacity onLongPress={() => quotaPress(item[1])} >
+                                                    <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} />
+                                                </TouchableOpacity>}
+                                        </View>
+                                    )
+                                }
+                                else if (item.length === 3) {
+                                    return (
+                                        <View key={item[0].chiave}>
+                                            <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
+                                                <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
+                                                    <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity onLongPress={() => quotaPress(item[1])} >
+                                                    <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} />
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
+                                                {item[2].soldi === -1 ?
+                                                    <AggiungiQuote spazio={spazio} item={item[2]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
+                                                    <TouchableOpacity onLongPress={() => quotaPress(item[2])} >
+                                                        <GeneralQuote spazio={spazio} item={item[2]} flag={true} totale={route.params.totale} />
+                                                    </TouchableOpacity>}
+                                                <View style={[styles.item, { backgroundColor: '#121212', paddingBottom: 20 }]}>
+                                                    <View style={{ width: 169, height: 61, backgroundColor: '#121212', marginTop: 10, borderRadius: 50, marginRight: spazio, marginLeft: spazio, marginBottom: 18 }}>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    )
+                                }
+                                else if (item.length === 4) {
+                                    return (
+                                        <View key={item[0].chiave} style={{marginBottom: item[3].soldi === -1 ? 0 : 27 }}>
+                                            <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
+                                                <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
+                                                    <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity onLongPress={() => quotaPress(item[1])} >
+                                                    <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} />
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
+                                                <TouchableOpacity onLongPress={() => quotaPress(item[2])} >
+                                                    <GeneralQuote spazio={spazio} item={item[2]} flag={true} totale={route.params.totale} />
+                                                </TouchableOpacity>
+                                                {item[3].soldi === -1 ?
+                                                    <AggiungiQuote spazio={spazio} item={item[3]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
+                                                    <TouchableOpacity onLongPress={() => quotaPress(item[3])} >
+                                                        <GeneralQuote spazio={spazio} item={item[3]} flag={true} totale={route.params.totale} />
+                                                    </TouchableOpacity>}
+                                            </View>
+                                        </View>
+                                    )
+                                }
                             }
                         })}
                     </ScrollView>
+                    <View style={[styles.pagination, { marginTop: 30 }]}>
+                        {finalState.map((_, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                style={[
+                                    styles.dot,
+                                    activeIndex === index && styles.activeDot,
+                                ]}
+                                onPress={() => handleDotPress(index)}
+                            />
+                        ))}
+                    </View>
                 </View>
 
                 <View style={{ backgroundColor: '#121212' }}>
+                    <View style={[styles.viewPreconto2,{ backgroundColor: '#171717',paddingTop: 20, flexDirection: 'row',justifyContent: 'space-between',paddingBottom: 30, }]}>
+                            <View style={[styles.viewButton2, { backgroundColor: 'red', marginLeft: 20, borderColor:'red' }]}>
+                                <TouchableOpacity onPress={() => { }} style={styles.touchButton}>
+                                    <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}} >
+                                        <Icon name='trash-o' size={21} color='white' />
+                                    <Text style={styles.menuItemText}> Elimina quota</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={[styles.viewButton2, { backgroundColor: '#54d169', marginRight: 20 }]}>
+                                <TouchableOpacity onPress={() => { }} style={styles.touchButton}>
+                                <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}} >
+                                    <Icon name='lock' size={21} color='white' />
+                                    <Text style={styles.menuItemText}> Blocca quota</Text>
+                                </View>
+                                </TouchableOpacity>
+                            </View>
+                    </View>
+                </View>
+
+                <View style={{ backgroundColor: '#171717' }}>
                     <View style={[styles.viewPreconto2, { backgroundColor: '#1D1D1D' }]}>
                         <View style={styles.viewSinglePreconto2}>
                             <Text style={styles.testoPreconto2}>Conto</Text>
@@ -300,7 +402,7 @@ const SetupScreen2 = ({ route }) => {
                             </TouchableOpacity>
                         </View>
                         <View style={[styles.viewButton, { backgroundColor: '#54d169', marginRight: 20 }]}>
-                            <TouchableOpacity onPress={() => navigation.navigate('riepilogo', { conto: route.params.conto, persone: route.params.persone, mancia: route.params.mancia, quotaxPers: route.params.quotaxPers, totale: route.params.totale, items: itemState })} style={styles.touchButton}>
+                            <TouchableOpacity onPress={() => navigation.navigate('riepilogo', { conto: route.params.conto, persone: route.params.persone, mancia: route.params.mancia, quotaxPers: route.params.quotaxPers, totale: route.params.totale, items: singoli })} style={styles.touchButton}>
                                 <Text style={styles.menuItemText}>Riepilogo</Text>
                             </TouchableOpacity>
                         </View>
@@ -312,6 +414,24 @@ const SetupScreen2 = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+    pagination: {
+        position: 'absolute',
+        bottom: 14,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    dot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: 'white',
+        marginHorizontal: 4,
+    },
+    activeDot: {
+        backgroundColor: '#54d169',
+    },
     container: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -380,6 +500,13 @@ const styles = StyleSheet.create({
         color: 'white',
         paddingVertical: 7
     },
+    viewButton2 : {
+        width: 150,
+        height: 41,
+        borderRadius: 20,
+        borderColor: '#54d169',
+        borderWidth: 1
+    }
 });
 
 export default SetupScreen2;
