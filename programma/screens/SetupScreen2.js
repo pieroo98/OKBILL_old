@@ -3,17 +3,26 @@ import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Keyboa
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+const QuotaVuota = ({spazio}) => {
+    return (
+        <View style={[styles.item, { backgroundColor: '#121212', paddingBottom: 20 }]}>
+            <View style={{ width: 169, height: 61, backgroundColor: '#121212', marginTop: 10, borderRadius: 50, marginRight: spazio, marginLeft: spazio, marginBottom: 18 }}>
+            </View>
+        </View>
+    )
+}
+
 const GeneralQuote = ({ spazio, item, flag, totale }) => {
     return (
         <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item.bloccato ? 'white' : item.selezionato ? '#54d169' : '#1D1D1D' }} >
             <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{item.persona}</Text>
             <View style={{ flexDirection: 'row', justifyContent: flag ? 'space-between' : 'center' }}>
                 {flag ? item.soldi - 1 >= 0 ?
-                    <TouchableOpacity style={{ paddingHorizontal: 10 }}>
-                        <Icon name="minus" size={21} color="white" />
+                    <TouchableOpacity disabled={item.selezionato ? false : true} style={{ paddingHorizontal: 10 }}>
+                        <Icon name="minus" size={21} color={item.selezionato ?"#54d169":"white"} />
                     </TouchableOpacity> :
                     <View style={{ paddingHorizontal: 10 }}>
-                        <Icon name="minus" size={21} color="white" />
+                        <Icon name="minus" size={21} color={item.selezionato ?"#54d169":"white"} />
                     </View>
                     : null}
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -21,11 +30,11 @@ const GeneralQuote = ({ spazio, item, flag, totale }) => {
                     <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{' €'}</Text>
                 </View>
                 {flag ? item.soldi + 1 <= totale ?
-                    <TouchableOpacity style={{ paddingHorizontal: 10 }}>
-                        <Icon name="plus" size={21} color="white" />
+                    <TouchableOpacity disabled={item.selezionato ? false : true} style={{ paddingHorizontal: 10 }}>
+                        <Icon name="plus" size={21} color={item.selezionato ?"#54d169":"white"} />
                     </TouchableOpacity> :
                     <View style={{ paddingHorizontal: 10 }}>
-                        <Icon name="plus" size={21} color="white" />
+                        <Icon name="plus" size={21} color={item.selezionato ?"#54d169":"white"} />
                     </View>
                     : null}
             </View>
@@ -35,8 +44,13 @@ const GeneralQuote = ({ spazio, item, flag, totale }) => {
 
 const AggiungiQuote = ({ spazio, item, setAddQuota, quoteMod, setQuoteMod }) => {
     const handlePress = () => {
-        let esporta = { persona: '1 quota', chiave: item.chiave, soldi: 0, bloccato: false, selezionato: false };
-        let prec = quoteMod;
+        let esporta = { persona: '1 quota', chiave: item.chiave, soldi: 0, bloccato: false, selezionato: true };
+        let prec = quoteMod.map((p) => {
+            return {
+                ...p,
+                selezionato: false,
+            }
+        })
         prec.push(esporta);
         setQuoteMod(prec);
         setAddQuota(true);
@@ -161,7 +175,7 @@ const SetupScreen2 = ({ route }) => {
             if (p.chiave === item.chiave) {
                 return {
                     ...p,
-                    selezionato: !item.selezionato,
+                    selezionato: true,
                 }
             }
             else {
@@ -235,9 +249,15 @@ const SetupScreen2 = ({ route }) => {
                         {finalState.map((item) => {
                             if (finalState.length === 1 && item.length === 2) {
                                 return (
-                                    <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
-                                        <GeneralQuote spazio={spazio} item={item[0]} flag={false} totale={route.params.totale} />
-                                        <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} />
+                                    <View key={item[0].chiave}>
+                                        <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
+                                            <GeneralQuote spazio={spazio} item={item[0]} flag={false} totale={route.params.totale} />
+                                            <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} />
+                                        </View>
+                                        <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <QuotaVuota spazio={spazio}/>
+                                            <QuotaVuota spazio={spazio}/>
+                                        </View>
                                     </View>
                                 )
                             }
@@ -251,10 +271,7 @@ const SetupScreen2 = ({ route }) => {
                                                     <TouchableOpacity onLongPress={() => quotaPress(item)} >
                                                         <GeneralQuote spazio={spazio} item={item} flag={true} totale={route.params.totale} />
                                                     </TouchableOpacity>}
-                                            <View style={[styles.item, { backgroundColor: '#121212', paddingBottom: 20 }]}>
-                                                <View style={{ width: 169, height: 61, backgroundColor: '#121212', marginTop: 10, borderRadius: 50, marginRight: spazio, marginLeft: spazio, marginBottom: 18 }}>
-                                                </View>
-                                            </View>
+                                            <QuotaVuota spazio={spazio}/>
                                         </View>
                                     )
                                 }
@@ -289,17 +306,14 @@ const SetupScreen2 = ({ route }) => {
                                                     <TouchableOpacity onLongPress={() => quotaPress(item[2])} >
                                                         <GeneralQuote spazio={spazio} item={item[2]} flag={true} totale={route.params.totale} />
                                                     </TouchableOpacity>}
-                                                <View style={[styles.item, { backgroundColor: '#121212', paddingBottom: 20 }]}>
-                                                    <View style={{ width: 169, height: 61, backgroundColor: '#121212', marginTop: 10, borderRadius: 50, marginRight: spazio, marginLeft: spazio, marginBottom: 18 }}>
-                                                    </View>
-                                                </View>
+                                                <QuotaVuota spazio={spazio}/>
                                             </View>
                                         </View>
                                     )
                                 }
                                 else if (item.length === 4) {
                                     return (
-                                        <View key={item[0].chiave} style={{marginBottom: item[3].soldi === -1 ? 0 : 27 }}>
+                                        <View key={item[0].chiave} style={{ marginBottom: item[3].soldi === -1 ? 0 : 27 }}>
                                             <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                                 <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
                                                     <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
@@ -339,23 +353,23 @@ const SetupScreen2 = ({ route }) => {
                 </View>
 
                 <View style={{ backgroundColor: '#121212' }}>
-                    <View style={[styles.viewPreconto2,{ backgroundColor: '#171717',paddingTop: 20, flexDirection: 'row',justifyContent: 'space-between',paddingBottom: 30, }]}>
-                            <View style={[styles.viewButton2, { backgroundColor: 'red', marginLeft: 20, borderColor:'red' }]}>
-                                <TouchableOpacity onPress={() => { }} style={styles.touchButton}>
-                                    <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}} >
-                                        <Icon name='trash-o' size={21} color='white' />
+                    <View style={[styles.viewPreconto2, { backgroundColor: '#171717', paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 30, }]}>
+                        <View style={[styles.viewButton2, { backgroundColor: 'red', marginLeft: 20, borderColor: 'red', opacity:quoteMod.length===0 || finalState[0][0].selezionato ? 0.5 : 1 }]}>
+                            <TouchableOpacity disabled={quoteMod.length===0 ? true : false} onPress={() => { }} style={styles.touchButton}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
+                                    <Icon name='trash-o' size={21} color='white' />
                                     <Text style={styles.menuItemText}> Elimina quota</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={[styles.viewButton2, { backgroundColor: '#54d169', marginRight: 20 }]}>
-                                <TouchableOpacity onPress={() => { }} style={styles.touchButton}>
-                                <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}} >
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={[styles.viewButton2, { backgroundColor: '#54d169', marginRight: 20, opacity:quoteMod.length===0 ? 0.5 : 1 }]}>
+                            <TouchableOpacity disabled={quoteMod.length===0? true : false} onPress={() => { }} style={styles.touchButton}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
                                     <Icon name='lock' size={21} color='white' />
                                     <Text style={styles.menuItemText}> Blocca quota</Text>
                                 </View>
-                                </TouchableOpacity>
-                            </View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
 
@@ -500,7 +514,7 @@ const styles = StyleSheet.create({
         color: 'white',
         paddingVertical: 7
     },
-    viewButton2 : {
+    viewButton2: {
         width: 150,
         height: 41,
         borderRadius: 20,
