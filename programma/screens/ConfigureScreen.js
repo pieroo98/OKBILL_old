@@ -187,7 +187,7 @@ const ConfigureScreen = ({ route }) => {
                         </View>
                     </View>
                 </View>
-                <View style={{ backgroundColor: '#1d1d1d' }} >
+                <View style={{ backgroundColor: '#1D1D1D' }} >
                     <View style={{ borderTopLeftRadius: 14, borderTopRightRadius: 14, backgroundColor: '#222222', }}>
                         <Text style={{ marginBottom: 10, marginTop: 20, color: 'white', fontSize: 16, marginLeft: 20 }}>Numero di persone</Text>
                         <Slider

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Keyboard, Dimensions, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ParametriGenerali from './ParametriGenerali';
 
 const QuotaVuota = ({spazio}) => {
     return (
@@ -18,7 +19,7 @@ const GeneralQuote = ({ spazio, item, flag, totale }) => {
             <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{item.persona}</Text>
             <View style={{ flexDirection: 'row', justifyContent: flag ? 'space-between' : 'center' }}>
                 {flag ? item.soldi - 1 >= 0 ?
-                    <TouchableOpacity disabled={item.selezionato ? false : true} style={{ paddingHorizontal: 10 }}>
+                    <TouchableOpacity disabled={item.selezionato && !item.bloccato ? false : true } style={{ paddingHorizontal: 10, }}>
                         <Icon name="minus" size={21} color={item.selezionato ?"#54d169":"white"} />
                     </TouchableOpacity> :
                     <View style={{ paddingHorizontal: 10 }}>
@@ -30,7 +31,7 @@ const GeneralQuote = ({ spazio, item, flag, totale }) => {
                     <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1 }}>{' €'}</Text>
                 </View>
                 {flag ? item.soldi + 1 <= totale ?
-                    <TouchableOpacity disabled={item.selezionato ? false : true} style={{ paddingHorizontal: 10 }}>
+                    <TouchableOpacity disabled={item.selezionato && !item.bloccato ? false : true } style={{ paddingHorizontal: 10 }}>
                         <Icon name="plus" size={21} color={item.selezionato ?"#54d169":"white"} />
                     </TouchableOpacity> :
                     <View style={{ paddingHorizontal: 10 }}>
@@ -80,6 +81,7 @@ const SetupScreen2 = ({ route }) => {
     const { width } = Dimensions.get('window');
     const scrollViewRef = useRef();
     const [spazio, setSpazio] = useState(((width - (169 * 2)) / 4));
+    const navigation = useNavigation();
     let items = [];
     let nomi = ' quote';
     let nome = ' quota';
@@ -188,11 +190,28 @@ const SetupScreen2 = ({ route }) => {
         setDue(true);
     }
 
-    const bloccaQuota = (item) => {
+    const bloccaQuota = () => {
+        setSingoli(singoli.map((p)=>{
+            if(p.selezionato){
+                return{
+                    ...p,
+                    bloccato : !p.bloccato,
+                }
+            }
+            else{
+                return{
+                    ...p,
+                }
+            }
+        }));
+        setDue(true);
+        let item = singoli.find((p) => p.selezionato);
         console.log(item);
+        console.log("ok")
     }
 
-    const cancellaQuota = (item) => {
+    const cancellaQuota = () => {
+        let item = singoli.find((p) => p.selezionato);
         console.log(item);
     }
 
@@ -209,32 +228,7 @@ const SetupScreen2 = ({ route }) => {
             animated: true,
         });
     };
-
-    const navigation = useNavigation();
-    let coloreConto, colorePersone, coloreMancia, coloreTotale, manciaOpaco;
-    coloreConto = colorePersone = coloreMancia = coloreTotale = 'white';
-    if (route.params.conto > 0)
-        coloreConto = '#54D169';
-    else if (route.params.conto == 0)
-        coloreConto = 'white';
-
-    if (route.params.persone > 2)
-        colorePersone = '#54D169';
-    else if (route.params.persone == 0)
-        colorePersone = 'white';
-
-    if (route.params.mancia > 0) {
-        coloreMancia = '#54D169';
-        manciaOpaco = 1;
-    }
-    else if (route.params.mancia == 0) {
-        coloreMancia = 'white';
-        manciaOpaco = 0.5
-    }
-    if (route.params.totale > 0)
-        coloreTotale = '#54D169';
-    else if (route.params.totale == 0)
-        coloreTotale = 'white';
+    
     return (
         <>
             <ScrollView style={{ backgroundColor: '#222222' }}>
@@ -268,7 +262,7 @@ const SetupScreen2 = ({ route }) => {
                                             {item.soldi === -1 ?
                                                 <AggiungiQuote spazio={spazio} item={item} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
                                                 item.chiave === 0 ? <GeneralQuote spazio={spazio} item={item} flag={true} totale={route.params.totale} /> :
-                                                    <TouchableOpacity onLongPress={() => quotaPress(item)} >
+                                                    <TouchableOpacity disabled={item.selezionato ? true : false} onLongPress={() => quotaPress(item)} >
                                                         <GeneralQuote spazio={spazio} item={item} flag={true} totale={route.params.totale} />
                                                     </TouchableOpacity>}
                                             <QuotaVuota spazio={spazio}/>
@@ -278,12 +272,12 @@ const SetupScreen2 = ({ route }) => {
                                 else if (item.length === 2) {
                                     return (
                                         <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
-                                            <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
+                                            <TouchableOpacity disabled={item[0].selezionato ? true : false} onLongPress={() => quotaPress(item[0])} >
                                                 <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
                                             </TouchableOpacity>
                                             {item[1].soldi === -1 ?
                                                 <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
-                                                <TouchableOpacity onLongPress={() => quotaPress(item[1])} >
+                                                <TouchableOpacity disabled={item[1].selezionato ? true : false} onLongPress={() => quotaPress(item[1])} >
                                                     <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} />
                                                 </TouchableOpacity>}
                                         </View>
@@ -293,17 +287,17 @@ const SetupScreen2 = ({ route }) => {
                                     return (
                                         <View key={item[0].chiave}>
                                             <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
-                                                <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
+                                                <TouchableOpacity disabled={item[0].selezionato ? true : false} onLongPress={() => quotaPress(item[0])} >
                                                     <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
                                                 </TouchableOpacity>
-                                                <TouchableOpacity onLongPress={() => quotaPress(item[1])} >
+                                                <TouchableOpacity disabled={item[1].selezionato ? true : false} onLongPress={() => quotaPress(item[1])} >
                                                     <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} />
                                                 </TouchableOpacity>
                                             </View>
                                             <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                                 {item[2].soldi === -1 ?
                                                     <AggiungiQuote spazio={spazio} item={item[2]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
-                                                    <TouchableOpacity onLongPress={() => quotaPress(item[2])} >
+                                                    <TouchableOpacity disabled={item[2].selezionato ? true : false} onLongPress={() => quotaPress(item[2])} >
                                                         <GeneralQuote spazio={spazio} item={item[2]} flag={true} totale={route.params.totale} />
                                                     </TouchableOpacity>}
                                                 <QuotaVuota spazio={spazio}/>
@@ -315,20 +309,20 @@ const SetupScreen2 = ({ route }) => {
                                     return (
                                         <View key={item[0].chiave} style={{ marginBottom: item[3].soldi === -1 ? 0 : 27 }}>
                                             <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
-                                                <TouchableOpacity onLongPress={() => quotaPress(item[0])} >
+                                                <TouchableOpacity disabled={item[0].selezionato ? true : false} onLongPress={() => quotaPress(item[0])} >
                                                     <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
                                                 </TouchableOpacity>
-                                                <TouchableOpacity onLongPress={() => quotaPress(item[1])} >
+                                                <TouchableOpacity disabled={item[1].selezionato ? true : false} onLongPress={() => quotaPress(item[1])} >
                                                     <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} />
                                                 </TouchableOpacity>
                                             </View>
                                             <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
-                                                <TouchableOpacity onLongPress={() => quotaPress(item[2])} >
+                                                <TouchableOpacity disabled={item[2].selezionato ? true : false} onLongPress={() => quotaPress(item[2])} >
                                                     <GeneralQuote spazio={spazio} item={item[2]} flag={true} totale={route.params.totale} />
                                                 </TouchableOpacity>
                                                 {item[3].soldi === -1 ?
                                                     <AggiungiQuote spazio={spazio} item={item[3]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
-                                                    <TouchableOpacity onLongPress={() => quotaPress(item[3])} >
+                                                    <TouchableOpacity disabled={item[3].selezionato ? true : false} onLongPress={() => quotaPress(item[3])} >
                                                         <GeneralQuote spazio={spazio} item={item[3]} flag={true} totale={route.params.totale} />
                                                     </TouchableOpacity>}
                                             </View>
@@ -355,7 +349,7 @@ const SetupScreen2 = ({ route }) => {
                 <View style={{ backgroundColor: '#121212' }}>
                     <View style={[styles.viewPreconto2, { backgroundColor: '#171717', paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 30, }]}>
                         <View style={[styles.viewButton2, { backgroundColor: 'red', marginLeft: 20, borderColor: 'red', opacity:quoteMod.length===0 || finalState[0][0].selezionato ? 0.5 : 1 }]}>
-                            <TouchableOpacity disabled={quoteMod.length===0 ? true : false} onPress={() => { }} style={styles.touchButton}>
+                            <TouchableOpacity disabled={quoteMod.length===0 ? true : false} onPress={() => { cancellaQuota()}} style={styles.touchButton}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
                                     <Icon name='trash-o' size={21} color='white' />
                                     <Text style={styles.menuItemText}> Elimina quota</Text>
@@ -363,7 +357,7 @@ const SetupScreen2 = ({ route }) => {
                             </TouchableOpacity>
                         </View>
                         <View style={[styles.viewButton2, { backgroundColor: '#54d169', marginRight: 20, opacity:quoteMod.length===0 ? 0.5 : 1 }]}>
-                            <TouchableOpacity disabled={quoteMod.length===0? true : false} onPress={() => { }} style={styles.touchButton}>
+                            <TouchableOpacity disabled={quoteMod.length===0? true : false} onPress={() => { bloccaQuota() }} style={styles.touchButton}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
                                     <Icon name='lock' size={21} color='white' />
                                     <Text style={styles.menuItemText}> Blocca quota</Text>
@@ -373,38 +367,7 @@ const SetupScreen2 = ({ route }) => {
                     </View>
                 </View>
 
-                <View style={{ backgroundColor: '#171717' }}>
-                    <View style={[styles.viewPreconto2, { backgroundColor: '#1D1D1D' }]}>
-                        <View style={styles.viewSinglePreconto2}>
-                            <Text style={styles.testoPreconto2}>Conto</Text>
-                            <View style={[styles.preconto2, { marginTop: 20, borderColor: coloreConto, backgroundColor: '#1D1D1D' }]}>
-                                <Text style={{ color: "white", fontSize: 14, }}>{route.params.conto + ' €'}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.viewSinglePreconto2}>
-                            <Text style={[styles.testoPreconto2, { marginBottom: 20 }]}>Persone</Text>
-                            <View style={[styles.preconto2, { borderColor: colorePersone, backgroundColor: '#1D1D1D' }]}>
-                                <Text style={{ color: "white", fontSize: 14, }}>{route.params.persone}</Text>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-                <View style={{ backgroundColor: '#1D1D1D' }}>
-                    <View style={[styles.viewPreconto2, { backgroundColor: '#222222' }]}>
-                        <View style={styles.viewSinglePreconto2}>
-                            <Text style={styles.testoPreconto2}>Mancia</Text>
-                            <View style={[styles.preconto2, { marginTop: 20, borderColor: coloreMancia, backgroundColor: '#222222' }]}>
-                                <Text style={{ color: "white", fontSize: 14, opacity: manciaOpaco }}>{route.params.mancia + '%'}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.viewSinglePreconto2}>
-                            <Text style={[styles.testoPreconto2, { marginBottom: 20 }]}>Totale</Text>
-                            <View style={[styles.preconto2, { borderColor: coloreTotale, backgroundColor: '#222222' }]}>
-                                <Text style={{ color: "white", fontSize: 14, }}>{route.params.totale + '€'}</Text>
-                            </View>
-                        </View>
-                    </View>
-                </View>
+                <ParametriGenerali conto={route.params.conto} persone={route.params.persone} mancia={route.params.mancia} totale={route.params.totale} />
 
             </ScrollView>
             <View style={{ backgroundColor: '#222222' }} >
@@ -468,30 +431,6 @@ const styles = StyleSheet.create({
     currentItem: {
         marginTop: 20,
         fontSize: 20,
-    },
-    viewPreconto2: {
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20
-    },
-    viewSinglePreconto2: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    testoPreconto2: {
-        color: 'white',
-        fontSize: 16,
-        alignSelf: 'center',
-        marginLeft: 20
-    },
-    preconto2: {
-        borderRadius: 20,
-        marginRight: 20,
-        marginBottom: 20,
-        padding: 2,
-        borderWidth: 1,
-        width: 67,
-        height: 29,
-        alignItems: 'center',
     },
     view2Button: {
         flexDirection: 'row',
