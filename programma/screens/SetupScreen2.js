@@ -43,7 +43,7 @@ const GeneralQuote = ({ spazio, item, flag, totale }) => {
     );
 }
 
-const AggiungiQuote = ({ spazio, item, setAddQuota, quoteMod, setQuoteMod }) => {
+const AggiungiQuote = ({ spazio, item, setAddQuota, quoteMod, setQuoteMod, setCliccato }) => {
     const handlePress = () => {
         let esporta = { persona: '1 quota', chiave: item.chiave, soldi: 0, bloccato: false, selezionato: true };
         let prec = quoteMod.map((p) => {
@@ -55,6 +55,7 @@ const AggiungiQuote = ({ spazio, item, setAddQuota, quoteMod, setQuoteMod }) => 
         prec.push(esporta);
         setQuoteMod(prec);
         setAddQuota(true);
+        setCliccato(esporta);
     };
 
     return (
@@ -75,6 +76,7 @@ const SetupScreen2 = ({ route }) => {
     const [singoli, setSingoli] = useState([]);
     const [finalState, setFinalState] = useState([]);
     const [quoteMod, setQuoteMod] = useState([]);
+    const [cliccato, setCliccato] = useState({persona: '1 quota', chiave: -1, soldi: 0, bloccato: false, selezionato: true });
     const [addQuota, setAddQuota] = useState(true);
     const [due, setDue] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -188,11 +190,13 @@ const SetupScreen2 = ({ route }) => {
             }
         }));
         setDue(true);
+        setCliccato(item);
     }
 
     const bloccaQuota = () => {
         setSingoli(singoli.map((p)=>{
             if(p.selezionato){
+                setCliccato({persona: p.persona, chiave : p.chiave, soldi: p.soldi,bloccato : !p.bloccato, selezionato : p.selezionato});
                 return{
                     ...p,
                     bloccato : !p.bloccato,
@@ -205,14 +209,12 @@ const SetupScreen2 = ({ route }) => {
             }
         }));
         setDue(true);
-        let item = singoli.find((p) => p.selezionato);
-        console.log(item);
-        console.log("ok")
     }
 
     const cancellaQuota = () => {
-        let item = singoli.find((p) => p.selezionato);
-        console.log(item);
+        setSingoli(singoli.filter((p) => p.chiave !== cliccato.chiave ));
+        setQuoteMod(quoteMod.filter((p) => p.chiave !== cliccato.chiave ));
+        setDue(true);
     }
 
     const handleScroll = (event) => {
@@ -246,7 +248,7 @@ const SetupScreen2 = ({ route }) => {
                                     <View key={item[0].chiave}>
                                         <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                             <GeneralQuote spazio={spazio} item={item[0]} flag={false} totale={route.params.totale} />
-                                            <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} />
+                                            <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} />
                                         </View>
                                         <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <QuotaVuota spazio={spazio}/>
@@ -260,7 +262,7 @@ const SetupScreen2 = ({ route }) => {
                                     return (
                                         <View key={item.chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                             {item.soldi === -1 ?
-                                                <AggiungiQuote spazio={spazio} item={item} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
+                                                <AggiungiQuote spazio={spazio} item={item} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} /> :
                                                 item.chiave === 0 ? <GeneralQuote spazio={spazio} item={item} flag={true} totale={route.params.totale} /> :
                                                     <TouchableOpacity disabled={item.selezionato ? true : false} onLongPress={() => quotaPress(item)} >
                                                         <GeneralQuote spazio={spazio} item={item} flag={true} totale={route.params.totale} />
@@ -276,7 +278,7 @@ const SetupScreen2 = ({ route }) => {
                                                 <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} />
                                             </TouchableOpacity>
                                             {item[1].soldi === -1 ?
-                                                <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
+                                                <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} /> :
                                                 <TouchableOpacity disabled={item[1].selezionato ? true : false} onLongPress={() => quotaPress(item[1])} >
                                                     <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} />
                                                 </TouchableOpacity>}
@@ -296,7 +298,7 @@ const SetupScreen2 = ({ route }) => {
                                             </View>
                                             <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                                 {item[2].soldi === -1 ?
-                                                    <AggiungiQuote spazio={spazio} item={item[2]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
+                                                    <AggiungiQuote spazio={spazio} item={item[2]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} /> :
                                                     <TouchableOpacity disabled={item[2].selezionato ? true : false} onLongPress={() => quotaPress(item[2])} >
                                                         <GeneralQuote spazio={spazio} item={item[2]} flag={true} totale={route.params.totale} />
                                                     </TouchableOpacity>}
@@ -321,7 +323,7 @@ const SetupScreen2 = ({ route }) => {
                                                     <GeneralQuote spazio={spazio} item={item[2]} flag={true} totale={route.params.totale} />
                                                 </TouchableOpacity>
                                                 {item[3].soldi === -1 ?
-                                                    <AggiungiQuote spazio={spazio} item={item[3]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} /> :
+                                                    <AggiungiQuote spazio={spazio} item={item[3]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} /> :
                                                     <TouchableOpacity disabled={item[3].selezionato ? true : false} onLongPress={() => quotaPress(item[3])} >
                                                         <GeneralQuote spazio={spazio} item={item[3]} flag={true} totale={route.params.totale} />
                                                     </TouchableOpacity>}
@@ -349,7 +351,7 @@ const SetupScreen2 = ({ route }) => {
                 <View style={{ backgroundColor: '#121212' }}>
                     <View style={[styles.viewPreconto2, { backgroundColor: '#171717', paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 30, }]}>
                         <View style={[styles.viewButton2, { backgroundColor: 'red', marginLeft: 20, borderColor: 'red', opacity:quoteMod.length===0 || finalState[0][0].selezionato ? 0.5 : 1 }]}>
-                            <TouchableOpacity disabled={quoteMod.length===0 ? true : false} onPress={() => { cancellaQuota()}} style={styles.touchButton}>
+                            <TouchableOpacity disabled={cliccato.chiave===0 || quoteMod.length===0  ? true : false} onPress={() => { cancellaQuota()}} style={styles.touchButton}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
                                     <Icon name='trash-o' size={21} color='white' />
                                     <Text style={styles.menuItemText}> Elimina quota</Text>
@@ -358,10 +360,14 @@ const SetupScreen2 = ({ route }) => {
                         </View>
                         <View style={[styles.viewButton2, { backgroundColor: '#54d169', marginRight: 20, opacity:quoteMod.length===0 ? 0.5 : 1 }]}>
                             <TouchableOpacity disabled={quoteMod.length===0? true : false} onPress={() => { bloccaQuota() }} style={styles.touchButton}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
+                                {!cliccato.bloccato ? <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
                                     <Icon name='lock' size={21} color='white' />
                                     <Text style={styles.menuItemText}> Blocca quota</Text>
-                                </View>
+                                </View> : 
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
+                                <Icon name='unlock' size={21} color='white' />
+                                <Text style={styles.menuItemText}> Sblocca quota</Text>
+                            </View>}
                             </TouchableOpacity>
                         </View>
                     </View>
