@@ -431,7 +431,7 @@ const SetupScreen2 = ({ route }) => {
                         contentContainerStyle={styles.scrollViewContent}
                     >
                         {finalState.map((item) => {
-                            if (finalState.length === 1 && item.length === 2) {
+                            if (finalState.length === 1 && item.length === 2 && item[1].soldi === -1) {
                                 return (
                                     <View key={item[0].chiave}>
                                         <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
@@ -461,15 +461,21 @@ const SetupScreen2 = ({ route }) => {
                                 }
                                 else if (item.length === 2) {
                                     return (
-                                        <View key={item[0].chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
-                                            <TouchableOpacity disabled={item[0].selezionato ? true : false} onLongPress={() => quotaPress(item[0])} >
-                                                <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone}/>
-                                            </TouchableOpacity>
-                                            {item[1].soldi === -1 ?
-                                                <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} singoli={singoli} setSingoli={setSingoli} totale={route.params.totale} persone={route.params.persone}/> :
-                                                <TouchableOpacity disabled={item[1].selezionato ? true : false} onLongPress={() => quotaPress(item[1])} >
-                                                    <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone}/>
-                                                </TouchableOpacity>}
+                                        <View key={item[0].chiave}>
+                                            <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
+                                                <TouchableOpacity disabled={item[0].selezionato ? true : false} onLongPress={() => quotaPress(item[0])} >
+                                                    <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone}/>
+                                                </TouchableOpacity>
+                                                {item[1].soldi === -1 ?
+                                                    <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} singoli={singoli} setSingoli={setSingoli} totale={route.params.totale} persone={route.params.persone}/> :
+                                                    <TouchableOpacity disabled={item[1].selezionato ? true : false} onLongPress={() => quotaPress(item[1])} >
+                                                        <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone}/>
+                                                    </TouchableOpacity>}
+                                            </View>
+                                            <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
+                                                <QuotaVuota spazio={spazio}/>
+                                                <QuotaVuota spazio={spazio}/>
+                                            </View>
                                         </View>
                                     )
                                 }
@@ -537,7 +543,7 @@ const SetupScreen2 = ({ route }) => {
                 </View>
 
                 <View style={{ backgroundColor: '#121212' }}>
-                    <View style={[styles.viewPreconto2, { backgroundColor: '#171717', paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 30, }]}>
+                    <View style={[styles.viewPreconto2, { backgroundColor: '#171717', paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 20, }]}>
                         <View style={[styles.viewButton2, { backgroundColor: 'red', marginLeft: 20, borderColor: 'red', opacity:quoteMod.length===0 || cliccato.chiave===-1 || finalState[0][0].selezionato ? 0.5 : 1 }]}>
                             <TouchableOpacity disabled={cliccato.chiave===-1 || cliccato.chiave===0 || quoteMod.length===0  ? true : false} onPress={() => { cancellaQuota({singoli: singoli,totale:route.params.totale, persone: route.params.persone, setSingoli:setSingoli, setQuoteMod:setQuoteMod, quoteMod:quoteMod,setAddQuota:setAddQuota, setCliccato:setCliccato,cliccato:cliccato})}} style={styles.touchButton}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
