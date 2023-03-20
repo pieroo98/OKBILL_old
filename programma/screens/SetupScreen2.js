@@ -5,18 +5,85 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ParametriGenerali from './ParametriGenerali';
 
 const ModQuota =({item, valore, singoli, setSingoli, quoteMod, setQuoteMod, setDue, totale, persone}) => {
-    let prezzoSingle = valore;//moltilpicare per il num di persone dentro item.persone
-    let personeTotal = persone;
-    let prezzoTotal = parseFloat(totale);
-    let quantiPrezzoBloccato = singoli.filter((i) => i.bloccato).map((i) => i.soldi);
+    let quantePersone = parseInt(item.persona.split(" ")[0]);
+    let quantiPrezzoBloccato = singoli.filter((i) => i.bloccato);
     let prezziBloccati = 0.0;
     for (const c of quantiPrezzoBloccato) {
-        prezziBloccati += c;
+        prezziBloccati += c.soldi;
     }
-    let prezzoRestanti = parseFloat(((prezzoTotal - prezzoSingle - prezziBloccati) / (personeTotal - 1 - quantiPrezzoBloccato.length)).toFixed(2));
-    // setSingoli(singoli.map((p)=>{
-        
-    // }))
+    let personeBloccate =0;
+    for (const c of quantiPrezzoBloccato) {
+        personeBloccate += parseInt(c.persona.split(" ")[0]);
+    }
+    let denominatore = parseInt(persone) - quantePersone - personeBloccate;
+    let numeratore = parseFloat(totale) - parseFloat(valore)*quantePersone - prezziBloccati*personeBloccate;
+    let prezzoRestanti;
+    if(denominatore!==0 && numeratore>=0){
+        prezzoRestanti = parseFloat(((numeratore) / (denominatore)).toFixed(2));
+        setSingoli(singoli.map((p)=>{
+            if(p.chiave===item.chiave){
+                return{
+                    ...p,
+                    soldi : valore.toFixed(2),
+                }
+            }
+            else if (!p.bloccato && p.soldi!==-1){
+                return{
+                    ...p,
+                    soldi: prezzoRestanti,
+                }
+            }
+            else{
+                return{
+                    ...p
+                }
+            }
+        }));
+        setQuoteMod(quoteMod.map((p)=>{
+            if(p.chiave===item.chiave){
+                return{
+                    ...p,
+                    soldi : valore.toFixed(2),
+                }
+            }
+            else if (!p.bloccato ){
+                return{
+                    ...p,
+                    soldi: prezzoRestanti,
+                }
+            }
+            else{
+                return{
+                    ...p
+                }
+            }
+        }));
+        setDue(true)
+    }
+    else{
+        console.log("non puoi modificare la quota, sblocca prima una quota bloccata!");
+        if(denominatore===0){
+            Alert.alert(
+            'Attenzione',
+            'non puoi modificare la quota, sblocca prima una quota bloccata!',
+            [
+              { text: 'OK', onPress: () => {} },
+            ]
+          );
+        }
+        else if(numeratore<0){
+            Alert.alert(
+                'Attenzione',
+                'non puoi modificare la quota, supereresti il conto totale!',
+                [
+                  { text: 'OK', onPress: () => {} },
+                ]
+              );
+        }
+    }
+    // console.log("num : "+numeratore)
+    // console.log("den : "+denominatore)
+    // console.log(prezzoRestanti)
 }
 
 const QuotaVuota = ({spazio}) => {
@@ -58,9 +125,9 @@ const GeneralQuote = ({ spazio, item, flag, totale, singoli, setSingoli, quoteMo
     );
 }
 
-const AggiungiQuote = ({ spazio, item, setAddQuota, quoteMod, setQuoteMod, setCliccato, prezzo }) => {
+const AggiungiQuote = ({ spazio, item, setAddQuota, quoteMod, setQuoteMod, setCliccato, singoli, setSingoli }) => {
     const handlePress = () => {
-        let esporta = { persona: '1 quota', chiave: item.chiave, soldi: parseFloat(prezzo), bloccato: false, selezionato: true };
+        let esporta = { persona: '1 quota', chiave: item.chiave, soldi: 0, bloccato: false, selezionato: true };
         let prec = quoteMod.map((p) => {
             return {
                 ...p,
@@ -290,7 +357,7 @@ const SetupScreen2 = ({ route }) => {
                                     <View key={item[0].chiave}>
                                         <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                             <GeneralQuote spazio={spazio} item={item[0]} flag={false} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone} />
-                                            <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} prezzo={singoli[0].soldi}/>
+                                            <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} singoli={singoli} setSingoli={setSingoli}/>
                                         </View>
                                         <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <QuotaVuota spazio={spazio}/>
@@ -304,7 +371,7 @@ const SetupScreen2 = ({ route }) => {
                                     return (
                                         <View key={item.chiave} style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                             {item.soldi === -1 ?
-                                                <AggiungiQuote spazio={spazio} item={item} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} prezzo={singoli[0].soldi}/> :
+                                                <AggiungiQuote spazio={spazio} item={item} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} singoli={singoli} setSingoli={setSingoli}/> :
                                                 item.chiave === 0 ? <GeneralQuote spazio={spazio} item={item} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone} /> :
                                                     <TouchableOpacity disabled={item.selezionato ? true : false} onLongPress={() => quotaPress(item)} >
                                                         <GeneralQuote spazio={spazio} item={item} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone}/>
@@ -320,7 +387,7 @@ const SetupScreen2 = ({ route }) => {
                                                 <GeneralQuote spazio={spazio} item={item[0]} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone}/>
                                             </TouchableOpacity>
                                             {item[1].soldi === -1 ?
-                                                <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} prezzo={singoli[0].soldi}/> :
+                                                <AggiungiQuote spazio={spazio} item={item[1]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} singoli={singoli} setSingoli={setSingoli}/> :
                                                 <TouchableOpacity disabled={item[1].selezionato ? true : false} onLongPress={() => quotaPress(item[1])} >
                                                     <GeneralQuote spazio={spazio} item={item[1]} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone}/>
                                                 </TouchableOpacity>}
@@ -340,7 +407,7 @@ const SetupScreen2 = ({ route }) => {
                                             </View>
                                             <View style={{ backgroundColor: '#121212', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 29 }}>
                                                 {item[2].soldi === -1 ?
-                                                    <AggiungiQuote spazio={spazio} item={item[2]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} prezzo={singoli[0].soldi}/> :
+                                                    <AggiungiQuote spazio={spazio} item={item[2]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} singoli={singoli} setSingoli={setSingoli}/> :
                                                     <TouchableOpacity disabled={item[2].selezionato ? true : false} onLongPress={() => quotaPress(item[2])} >
                                                         <GeneralQuote spazio={spazio} item={item[2]} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone} />
                                                     </TouchableOpacity>}
@@ -365,7 +432,7 @@ const SetupScreen2 = ({ route }) => {
                                                     <GeneralQuote spazio={spazio} item={item[2]} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone}/>
                                                 </TouchableOpacity>
                                                 {item[3].soldi === -1 ?
-                                                    <AggiungiQuote spazio={spazio} item={item[3]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} prezzo={singoli[0].soldi}/> :
+                                                    <AggiungiQuote spazio={spazio} item={item[3]} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setAddQuota={setAddQuota} setCliccato={setCliccato} singoli={singoli} setSingoli={setSingoli}/> :
                                                     <TouchableOpacity disabled={item[3].selezionato ? true : false} onLongPress={() => quotaPress(item[3])} >
                                                         <GeneralQuote spazio={spazio} item={item[3]} flag={true} totale={route.params.totale} singoli={singoli} setSingoli={setSingoli} quoteMod={quoteMod} setQuoteMod={setQuoteMod} setDue={setDue} persone={route.params.persone}/>
                                                     </TouchableOpacity>}
@@ -427,7 +494,7 @@ const SetupScreen2 = ({ route }) => {
                             </TouchableOpacity>
                         </View>
                         <View style={[styles.viewButton, { backgroundColor: '#54d169', marginRight: 20 }]}>
-                            <TouchableOpacity onPress={() => navigation.navigate('riepilogo', { conto: route.params.conto, persone: route.params.persone, mancia: route.params.mancia, quotaxPers: route.params.quotaxPers, totale: route.params.totale, items: singoli })} style={styles.touchButton}>
+                            <TouchableOpacity onPress={() => navigation.navigate('riepilogo', { conto: route.params.conto, persone: route.params.persone, mancia: route.params.mancia, quotaxPers: route.params.quotaxPers, totale: route.params.totale, items: singoli.slice(0,singoli.length-1) })} style={styles.touchButton}>
                                 <Text style={styles.menuItemText}>Riepilogo</Text>
                             </TouchableOpacity>
                         </View>

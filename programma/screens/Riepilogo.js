@@ -82,7 +82,7 @@ const Riepilogo = ({ route }) => {
                     <View style={{ width: 127, height: 41, backgroundColor: '#54d169', marginRight: 20, borderRadius: 20, borderColor: '#54d169', borderWidth: 1 }}>
                         <TouchableOpacity onPress={() =>{
                         navigation.setParams({conto : '', persone: 2, totale : 0, mancia: 0, quotaxPers: 0});
-                         navigation.reset({ index: 0, routes: [{name:'loading'}]}) }} style={{ justifyContent: 'center', flexDirection: 'row', marginBottom: 0 }}>
+                        navigation.navigate('loading') }} style={{ justifyContent: 'center', flexDirection: 'row', marginBottom: 0 }}>
                             <Text style={[styles.menuItemText, { paddingVertical: 7 }]}>Ricomincia</Text>
                         </TouchableOpacity>
                     </View>
