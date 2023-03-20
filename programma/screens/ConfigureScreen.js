@@ -81,9 +81,9 @@ const ConfigureScreen = ({ route }) => {
         let aggiunta = 0;
         if (item.val > 0) {
             if (conto > 0) {
-                aggiunta = (item.val / 100) * conto;
-                const fin = parseInt(conto) + parseInt(aggiunta);
-                setTotale(fin);
+                aggiunta = parseFloat((item.val / 100) * conto);
+                const fin = parseFloat(conto) + parseFloat(aggiunta);
+                setTotale(fin.toFixed(2));
                 const numero = fin / persone;
                 setQuotaxPers(parseFloat(numero.toFixed(2)));
             }
@@ -105,8 +105,8 @@ const ConfigureScreen = ({ route }) => {
         let aggiunta = 0;
         if (mancia > 0) {
             if (conto > 0) {
-                aggiunta = (parseInt(conto) * mancia) / 100;
-                const numero = (parseInt(conto) + aggiunta) / Math.round(newValue);
+                aggiunta = parseFloat((parseFloat(conto) * mancia) / 100);
+                const numero = (parseFloat(conto) + aggiunta) / Math.round(newValue);
                 setQuotaxPers(parseFloat(numero.toFixed(2)));
             }
             else
