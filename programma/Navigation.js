@@ -1,7 +1,6 @@
 import React from 'react';
 import {StyleSheet, View,Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import SetupScreen from './screens/SetupScreen';
 import SetupScreen2 from './screens/SetupScreen2';
 import ConfigureScreen from './screens/ConfigureScreen';
 import LoadingScreen from './screens/LoadingScreen';
@@ -36,6 +35,7 @@ function Navigation() {
                         <Image source={require('./assets/logo2.png')} style={styles.image}/>
                     </View>
                   ),
+                  headerLeft: null,
                    }} />
 
             <Stack.Screen
@@ -51,6 +51,7 @@ function Navigation() {
                         <Image source={require('./assets/logo2.png')} style={styles.image}/>
                     </View>
                   ),
+                  headerLeft: null,
                  }}
                 
                  />
@@ -67,6 +68,7 @@ function Navigation() {
                         <Image source={require('./assets/logo2.png')} style={styles.image}/>
                     </View>
                   ),
+                  headerLeft: null,
                  }}
                 
                  />

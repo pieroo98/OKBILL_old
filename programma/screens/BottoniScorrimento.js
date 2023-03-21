@@ -123,13 +123,15 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlignVertical: 'auto',
         textAlign: 'center',
-        paddingTop: 7
+        paddingTop: 7,
+        fontFamily:'Montserrat-Regular'
     },
     tutorial: {
         color: 'white',
         fontSize: 16,
         textAlign: 'center',
-        paddingTop: 25
+        paddingTop: 25,
+        fontFamily:'Montserrat-Regular'
     },
     menuItem: {
         marginTop: 44,

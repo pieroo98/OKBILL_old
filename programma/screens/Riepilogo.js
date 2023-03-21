@@ -28,7 +28,7 @@ const Riepilogo = ({ route }) => {
     return (
         <>
             <View style={{ backgroundColor: '#121212' }} >
-                <Text style={{ color: 'white', fontSize: 16, textAlign: 'center', marginTop: 15, marginBottom: 10 }}>{"Ecco quanto pagherete"}</Text>
+                <Text style={{ color: 'white', fontSize: 16, textAlign: 'center', marginTop: 15, marginBottom: 10, fontFamily:'Montserrat-Regular' }}>{"Ecco quanto pagherete"}</Text>
             </View>
             <ScrollView style={{ backgroundColor: '#121212' }} >
 
@@ -38,17 +38,17 @@ const Riepilogo = ({ route }) => {
                             <View key={i} >
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, marginTop: 21 }}>
                                     <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginLeft: 20, borderRadius: 50, borderWidth: 1, borderColor: '#54d169' }} >
-                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center' }}>{item[0].persona}</Text>
+                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item[0].persona}</Text>
                                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center' }}>{item[0].soldi}</Text>
-                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center' }}>{' €'}</Text>
+                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item[0].soldi}</Text>
+                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
                                         </View>
                                     </View>
                                     <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: 20, borderRadius: 50, borderWidth: 1, borderColor: '#54d169' }} >
-                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center' }}>{item[1].persona}</Text>
+                                        <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item[1].persona}</Text>
                                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center' }}>{item[1].soldi}</Text>
-                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center' }}>{' €'}</Text>
+                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', fontFamily:'Montserrat-Regular' }}>{item[1].soldi}</Text>
+                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -59,10 +59,10 @@ const Riepilogo = ({ route }) => {
                         return (
                             <View key={i} style={styles.item}>
                                 <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginTop: 21, borderRadius: 50, marginLeft: 20, borderWidth: 1, borderColor: '#54d169' }}>
-                                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center' }}>{item.persona}</Text>
+                                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item.persona}</Text>
                                     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                        <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center' }}>{item.soldi}</Text>
-                                        <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center' }}>{' €'}</Text>
+                                        <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item.soldi}</Text>
+                                        <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
                                     </View>
                                 </View>
                             </View>
@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     menuItemText: {
         fontSize: 16,
         color: 'white',
+        fontFamily:'Montserrat-Regular'
     },
 });
 

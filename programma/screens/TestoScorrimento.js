@@ -14,7 +14,7 @@ const TestoScorrimento = () => {
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Animatable.Text
         ref={textRef}
-        style={{ fontSize: 16, color:'white', marginTop:30}}
+        style={{ fontSize: 16, color:'white', marginTop:30, fontFamily:'Montserrat-Regular'}}
       >
         {"Benvenuto su OkBill, l’applicazione\nche ti permette di dividere il conto\ncon i tuoi amici in maniera facile e\nveloce"}
       </Animatable.Text>

@@ -34,13 +34,13 @@ const ParametriGenerali = ({ conto, persone, totale, mancia  }) => {
                     <View style={styles.viewSinglePreconto2}>
                         <Text style={styles.testoPreconto2}>Conto</Text>
                         <View style={[styles.preconto2, { marginTop: 20, borderColor: coloreConto, backgroundColor: '#1D1D1D' }]}>
-                            <Text style={{ color: "white", fontSize: 14, }}>{ conto + ' €'}</Text>
+                            <Text style={{ color: "white", fontSize: 14, fontFamily:'Montserrat-Regular' }}>{ conto + ' €'}</Text>
                         </View>
                     </View>
                     <View style={styles.viewSinglePreconto2}>
                         <Text style={[styles.testoPreconto2, { marginBottom: 20 }]}>Persone</Text>
                         <View style={[styles.preconto2, { borderColor: colorePersone, backgroundColor: '#1D1D1D' }]}>
-                            <Text style={{ color: "white", fontSize: 14, }}>{ persone}</Text>
+                            <Text style={{ color: "white", fontSize: 14, fontFamily:'Montserrat-Regular' }}>{ persone}</Text>
                         </View>
                     </View>
                 </View>
@@ -51,13 +51,13 @@ const ParametriGenerali = ({ conto, persone, totale, mancia  }) => {
                     <View style={styles.viewSinglePreconto2}>
                         <Text style={styles.testoPreconto2}>Mancia</Text>
                         <View style={[styles.preconto2, { marginTop: 20, borderColor: coloreMancia, backgroundColor: '#222222' }]}>
-                            <Text style={{ color: "white", fontSize: 14, opacity: manciaOpaco }}>{ mancia + '%'}</Text>
+                            <Text style={{ color: "white", fontSize: 14, opacity: manciaOpaco,  fontFamily:'Montserrat-Regular' }}>{ mancia + '%'}</Text>
                         </View>
                     </View>
                     <View style={styles.viewSinglePreconto2}>
                         <Text style={[styles.testoPreconto2, { marginBottom: 20 }]}>Totale</Text>
                         <View style={[styles.preconto2, { borderColor: coloreTotale, backgroundColor: '#222222' }]}>
-                            <Text style={{ color: "white", fontSize: 14, }}>{ totale + '€'}</Text>
+                            <Text style={{ color: "white", fontSize: 14, fontFamily:'Montserrat-Regular' }}>{ totale + '€'}</Text>
                         </View>
                     </View>
                 </View>
@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         alignSelf: 'center',
-        marginLeft: 20
+        marginLeft: 20,
+        fontFamily:'Montserrat-Regular'
     },
     preconto2: {
         borderRadius: 20,
