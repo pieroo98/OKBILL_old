@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Keyboard, Dimensions, Alert } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Keyboard, Dimensions, Alert, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ParametriGenerali from './ParametriGenerali';
@@ -58,7 +58,7 @@ const ModQuota =({item, valore, singoli, setSingoli, quoteMod, setQuoteMod, setD
         setDue(true)
     }
     else{
-        console.log("non puoi modificare la quota, sblocca prima una quota bloccata!");
+        //console.log("non puoi modificare la quota, sblocca prima una quota bloccata!");
         if(denominatore===0){
             Alert.alert(
             'Attenzione',
@@ -72,6 +72,15 @@ const ModQuota =({item, valore, singoli, setSingoli, quoteMod, setQuoteMod, setD
             Alert.alert(
                 'Attenzione',
                 'non puoi modificare la quota, supereresti il conto totale!',
+                [
+                  { text: 'OK', onPress: () => {} },
+                ]
+              );
+        }
+        else {
+            Alert.alert(
+                'Attenzione',
+                'non puoi modificare la quota, errore generico.',
                 [
                   { text: 'OK', onPress: () => {} },
                 ]
@@ -94,7 +103,7 @@ const GeneralQuote = ({ spazio, item, flag, totale, singoli, setSingoli, quoteMo
         <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item.selezionato ? '#54d169' : item.bloccato ? 'white' : '#1D1D1D' }} >
             <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1,  fontFamily:'Montserrat-Regular' }}>{item.persona}</Text>
             <View style={{ flexDirection: 'row', justifyContent: flag ? 'space-between' : 'center' }}>
-                {flag ? item.soldi - 1 >= 0 ?
+                {flag ? parseFloat(item.soldi) - 1 >= 0 ?
                     <TouchableOpacity disabled={item.selezionato && !item.bloccato ? false : true } style={{ paddingHorizontal: 10,opacity: item.bloccato ? 0.5 : 1 }} onPress={()=>{ModQuota({item:item, valore:parseFloat(item.soldi)-1, singoli:singoli, setSingoli:setSingoli, quoteMod:quoteMod, setQuoteMod: setQuoteMod, setDue:setDue, totale: totale, persone: persone})}} >
                         <Icon name="minus" size={21} color={item.bloccato ?"white" : item.selezionato ? "#54d169": "white"} />
                     </TouchableOpacity> :
@@ -106,7 +115,7 @@ const GeneralQuote = ({ spazio, item, flag, totale, singoli, setSingoli, quoteMo
                     <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1, fontFamily:'Montserrat-Regular' }}>{item.soldi}</Text>
                     <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1,  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
                 </View>
-                {flag ? item.soldi + 1 <= totale ?
+                {flag ? parseFloat(item.soldi) + 1 <= parseFloat(totale) ?
                     <TouchableOpacity disabled={item.selezionato && !item.bloccato ? false : true } style={{ paddingHorizontal: 10, opacity: item.bloccato ? 0.5 : 1 }} onPress={()=>{ModQuota({item:item, valore:parseFloat(item.soldi)+1, singoli:singoli, setSingoli:setSingoli, quoteMod:quoteMod, setQuoteMod: setQuoteMod, setDue:setDue, totale: totale, persone: persone})}} >
                         <Icon name="plus" size={21} color={item.bloccato ?"white" : item.selezionato ? "#54d169": "white"} />
                     </TouchableOpacity> :
@@ -544,16 +553,16 @@ const SetupScreen2 = ({ route }) => {
 
                 <View style={{ backgroundColor: '#121212' }}>
                     <View style={[styles.viewPreconto2, { backgroundColor: '#171717', paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 20, }]}>
-                        <View style={[styles.viewButton2, { backgroundColor: 'red', marginLeft: 20, borderColor: 'red', opacity:quoteMod.length===0 || cliccato.chiave===-1 || finalState[0][0].selezionato ? 0.5 : 1 }]}>
-                            <TouchableOpacity disabled={cliccato.chiave===-1 || cliccato.chiave===0 || quoteMod.length===0  ? true : false} onPress={() => { cancellaQuota({singoli: singoli,totale:route.params.totale, persone: route.params.persone, setSingoli:setSingoli, setQuoteMod:setQuoteMod, quoteMod:quoteMod,setAddQuota:setAddQuota, setCliccato:setCliccato,cliccato:cliccato})}} style={styles.touchButton}>
+                        <View style={[styles.viewButton2, { backgroundColor: '#BC3030', marginLeft: 20, borderColor: '#BC3030', opacity:quoteMod.length===0 || cliccato.chiave===-1 || finalState[0][0].selezionato ? 0.5 : 1 }]}>
+                            <Pressable disabled={cliccato.chiave===-1 || cliccato.chiave===0 || quoteMod.length===0  ? true : false} onPress={() => { cancellaQuota({singoli: singoli,totale:route.params.totale, persone: route.params.persone, setSingoli:setSingoli, setQuoteMod:setQuoteMod, quoteMod:quoteMod,setAddQuota:setAddQuota, setCliccato:setCliccato,cliccato:cliccato})}} style={styles.touchButton}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
                                     <Icon name='trash-o' size={21} color='white' />
                                     <Text style={styles.menuItemText}> Elimina quota</Text>
                                 </View>
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                         <View style={[styles.viewButton2, { backgroundColor: '#54d169', marginRight: 20, opacity:cliccato.chiave===-1 || quoteMod.length===0 ? 0.5 : 1 }]}>
-                            <TouchableOpacity disabled={cliccato.chiave===-1 || quoteMod.length===0? true : false} onPress={() => { bloccaQuota() }} style={styles.touchButton}>
+                            <Pressable disabled={cliccato.chiave===-1 || quoteMod.length===0? true : false} onPress={() => { bloccaQuota() }} style={styles.touchButton}>
                                 {!cliccato.bloccato ? <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
                                     <Icon name='lock' size={21} color='white' />
                                     <Text style={styles.menuItemText}> Blocca quota</Text>
@@ -562,7 +571,7 @@ const SetupScreen2 = ({ route }) => {
                                 <Icon name='unlock' size={21} color='white' />
                                 <Text style={styles.menuItemText}> Sblocca quota</Text>
                             </View>}
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                     </View>
                 </View>

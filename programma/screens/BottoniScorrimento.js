@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlignVertical: 'auto',
         textAlign: 'center',
-        paddingTop: 7,
+        paddingTop: 10,
         fontFamily:'Montserrat-Regular'
     },
     tutorial: {

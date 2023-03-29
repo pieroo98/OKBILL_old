@@ -266,6 +266,7 @@ const styles = StyleSheet.create({
         width: 67,
         height: 29,
         alignItems: 'center',
+        paddingVertical: 4
     },
     parola: {
         color: 'white',
