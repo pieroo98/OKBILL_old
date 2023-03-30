@@ -34,21 +34,23 @@ const Riepilogo = ({ route }) => {
 
                 {final.map((item, i) => {
                     if (item.length > 1) {
+                        let tmp = item[0].soldi;
+                        let tmp2 = item[1].soldi;
                         return (
                             <View key={i} >
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, marginTop: 21 }}>
                                     <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginLeft: 20, borderRadius: 50, borderWidth: 1, borderColor: '#54d169' }} >
                                         <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item[0].persona}</Text>
                                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item[0].soldi}</Text>
-                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
+                                            <Text style={{ fontSize: tmp.toString().length <5 ? 24 : tmp.toString().length <8 ? 22 : tmp.toString().length <10 ? 20 : 18, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item[0].soldi}</Text>
+                                            <Text style={{ fontSize: tmp.toString().length <5 ? 24 : tmp.toString().length <8 ? 22 : tmp.toString().length <10 ? 20 : 18, color: '#54d169', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
                                         </View>
                                     </View>
                                     <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: 20, borderRadius: 50, borderWidth: 1, borderColor: '#54d169' }} >
                                         <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item[1].persona}</Text>
                                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                            <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', fontFamily:'Montserrat-Regular' }}>{item[1].soldi}</Text>
-                                            <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
+                                            <Text style={{ fontSize: tmp2.toString().length <5 ? 24 : tmp2.toString().length <8 ? 22 : tmp2.toString().length <10 ? 20 : 18, color: 'white', alignSelf: 'center', fontFamily:'Montserrat-Regular' }}>{item[1].soldi}</Text>
+                                            <Text style={{ fontSize: tmp2.toString().length <5 ? 24 : tmp2.toString().length <8 ? 22 : tmp2.toString().length <10 ? 20 : 18, color: '#54d169', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -56,13 +58,14 @@ const Riepilogo = ({ route }) => {
                         )
                     }
                     else {
+                        let tmp = item.soldi;
                         return (
                             <View key={i} style={styles.item}>
                                 <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginTop: 21, borderRadius: 50, marginLeft: 20, borderWidth: 1, borderColor: '#54d169' }}>
                                     <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item.persona}</Text>
                                     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                        <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item.soldi}</Text>
-                                        <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
+                                        <Text style={{ fontSize: tmp.toString().length <5 ? 24 : tmp.toString().length <8 ? 22 : tmp.toString().length <10 ? 20 : 18, color: 'white', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{item.soldi}</Text>
+                                        <Text style={{ fontSize: tmp.toString().length <5 ? 24 : tmp.toString().length <8 ? 22 : tmp.toString().length <10 ? 20 : 18, color: '#54d169', alignSelf: 'center',  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
                                     </View>
                                 </View>
                             </View>

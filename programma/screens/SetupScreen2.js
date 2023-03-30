@@ -99,6 +99,7 @@ const QuotaVuota = ({spazio}) => {
 }
 
 const GeneralQuote = ({ spazio, item, flag, totale, singoli, setSingoli, quoteMod, setQuoteMod, setDue, persone }) => {
+    let tmp = item.soldi;
     return (
         <View style={{ width: 169, height: 61, backgroundColor: '#1D1D1D', marginRight: spazio, marginLeft: spazio, borderRadius: 50, borderWidth: 1, borderColor: item.selezionato ? '#54d169' : item.bloccato ? 'white' : '#1D1D1D' }} >
             <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1,  fontFamily:'Montserrat-Regular' }}>{item.persona}</Text>
@@ -112,8 +113,8 @@ const GeneralQuote = ({ spazio, item, flag, totale, singoli, setSingoli, quoteMo
                     </View>
                     : null}
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 24, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1, fontFamily:'Montserrat-Regular' }}>{item.soldi}</Text>
-                    <Text style={{ fontSize: 24, color: '#54d169', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1,  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
+                    <Text style={{ fontSize: tmp.toString().length <5 ? 24 : tmp.toString().length <8 ? 17 : tmp.toString().length <10 ? 14 : tmp.toString().length <11 ? 12 : 11, color: 'white', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1, fontFamily:'Montserrat-Regular' }}>{item.soldi}</Text>
+                    <Text style={{ fontSize: tmp.toString().length <5 ? 24 : tmp.toString().length <8 ? 17 : tmp.toString().length <10 ? 14 : tmp.toString().length <11 ? 12 : 11, color: '#54d169', alignSelf: 'center', opacity: item.bloccato ? 0.5 : 1,  fontFamily:'Montserrat-Regular' }}>{' €'}</Text>
                 </View>
                 {flag ? parseFloat(item.soldi) + 1 <= parseFloat(totale) ?
                     <TouchableOpacity disabled={item.selezionato && !item.bloccato ? false : true } style={{ paddingHorizontal: 10, opacity: item.bloccato ? 0.5 : 1 }} onPress={()=>{ModQuota({item:item, valore:parseFloat(item.soldi)+1, singoli:singoli, setSingoli:setSingoli, quoteMod:quoteMod, setQuoteMod: setQuoteMod, setDue:setDue, totale: totale, persone: persone})}} >
@@ -196,7 +197,7 @@ const AggiungiQuote = ({ spazio, item, setAddQuota, quoteMod, setQuoteMod, setCl
         <TouchableOpacity onPress={() => { handlePress() }}>
             <View style={[styles.item, { backgroundColor: '#121212', paddingBottom: 20 }]}>
                 <View style={{ width: 169, height: 61, backgroundColor: '#121212', marginTop: 10, borderRadius: 50, marginRight: spazio, marginLeft: spazio, marginBottom: 18, borderWidth: 1, borderColor: '#1D1D1D', }}>
-                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', paddingTop: 2, opacity: item.bloccato ? 0.5 : 1,  fontFamily:'Montserrat-Regular' }}>{item.persona}</Text>
+                    <Text style={{ fontSize: 14, color: 'white', alignSelf: 'center', paddingTop: 4, opacity: item.bloccato ? 0.5 : 1,  fontFamily:'Montserrat-Regular' }}>{item.persona}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'center', paddingTop: 4 }}>
                         <Icon name="plus" size={25} color="#54d169" />
                     </View>
@@ -662,7 +663,7 @@ const styles = StyleSheet.create({
         borderWidth: 1
     },
     menuItemText: {
-        fontSize: 16,
+        fontSize: 15,
         color: 'white',
         paddingVertical: 7,
         fontFamily:'Montserrat-Regular'

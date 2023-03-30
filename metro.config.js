@@ -14,5 +14,4 @@ module.exports = {
       },
     }),
   },
-  assets :['./programma/assets/fonts'],
 };
