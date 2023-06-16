@@ -25,7 +25,7 @@ const LoadingScreen = ({ navigation }) => {
             <TestoScorrimento />
             <View style={{ marginTop: 70 }}>
               <TextInput
-                placeholder={` Inserisci l'importo totale del conto`}
+                placeholder={` Inserisci l'importo totale del conto        `}
                 placeholderTextColor='#9E9E9E'
                 keyboardType="numeric"
                 value={conto}
@@ -34,7 +34,7 @@ const LoadingScreen = ({ navigation }) => {
                 returnKeyType="send"
                 multiline={false}
                 textAlignVertical='top'
-                style={{ borderColor: conto ? '#54d169' : '#858585', minHeight: 41, borderWidth: 1, borderRadius: 20, padding:7, color: 'white', textAlignVertical: 'auto', textAlign: 'center', fontSize:16  }}
+                style={{ borderColor: conto ? '#54d169' : '#858585',  borderWidth: 1, borderRadius: 20, padding:7, color: 'white', textAlignVertical: 'auto', textAlign: 'center', fontSize:15, fontFamily:'Montserrat-Regular',  }}
               />
             </View>
             <BottoniScorrimento navigation={navigation} conto={conto} setConto={setConto} />

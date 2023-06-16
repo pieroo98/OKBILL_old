@@ -5,6 +5,10 @@ import Slider from '@react-native-community/slider';
 
 const vett = [{ val: 0, press: false }, { val: 5, press: false }, { val: 10, press: false }, { val: 15, press: false }, { val: 20, press: false }];
 
+const len7 = 90;
+const len5 = 67;
+const len9 = 118;
+
 const ConfigureScreen = ({ route }) => {
     const navigation = useNavigation();
     const [conto, setConto] = useState(parseFloat(route.params.conto).toFixed(2));
@@ -152,14 +156,14 @@ const ConfigureScreen = ({ route }) => {
                     <View style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: '#171717' }}>
                         <View style={styles.rigeSeparate}>
                             <Text style={styles.parola}>Conto</Text>
-                            <View style={[styles.valore, { backgroundColor: '#171717', marginTop: 20, marginBottom: 13, borderColor: coloreConto }]} >
-                                <Text style={{ color: "white", fontSize: 14, }} >{conto + '€'}</Text>
+                            <View style={[styles.valore, { backgroundColor: '#171717', marginTop: 20, marginBottom: 13, borderColor: coloreConto, width: conto.toString().length <=5 ? len5: conto.toString().length<8 ? len7: len9, }]} >
+                                <Text style={{ color: "white", fontSize: 14, fontFamily:'Montserrat-Regular' }} >{conto + '€'}</Text>
                             </View>
                         </View>
                         <View style={styles.rigeSeparate}>
                             <Text style={[styles.parola, { marginBottom: 20 }]}>Persone</Text>
-                            <View style={[styles.valore, { backgroundColor: '#171717', marginBottom: 20, borderColor: colorePersone }]} >
-                                <Text style={{ color: "white", fontSize: 14, }} >{persone}</Text>
+                            <View style={[styles.valore, { backgroundColor: '#171717', marginBottom: 20, borderColor: colorePersone, width: conto.toString().length<=5 ? len5: conto.toString().length<8 ? len7: len9, }]} >
+                                <Text style={{ color: "white", fontSize: 14,  fontFamily:'Montserrat-Regular'}} >{persone}</Text>
                             </View>
                         </View>
                     </View>
@@ -169,27 +173,27 @@ const ConfigureScreen = ({ route }) => {
                     <View style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: '#1D1D1D' }}>
                         <View style={styles.rigeSeparate}>
                             <Text style={styles.parola}>Mancia</Text>
-                            <View style={[styles.valore, { backgroundColor: '#1D1D1D', marginTop: 20, marginBottom: 20, borderColor: coloreMancia }]} >
-                                <Text style={{ color: "white", fontSize: 14, opacity: manciaOpaco }} >{mancia + '%'}</Text>
+                            <View style={[styles.valore, { backgroundColor: '#1D1D1D', marginTop: 20, marginBottom: 20, borderColor: coloreMancia, width: conto.toString().length<=5 ? len5: conto.toString().length<8 ? len7: len9, }]} >
+                                <Text style={{ color: "white", fontSize: 14, opacity: manciaOpaco, fontFamily:'Montserrat-Regular' }} >{mancia + '%'}</Text>
                             </View>
                         </View>
                         <View style={styles.rigeSeparate}>
                             <Text style={[styles.parola, { marginBottom: 20 }]}>Totale</Text>
-                            <View style={[styles.valore, { backgroundColor: '#1D1D1D', marginBottom: 20, borderColor: coloreTotale }]} >
-                                <Text style={{ color: "white", fontSize: 14, }} >{totale + '€'}</Text>
+                            <View style={[styles.valore, { backgroundColor: '#1D1D1D', marginBottom: 20, borderColor: coloreTotale, width: conto.toString().length<=5 ? len5: conto.toString().length<8 ? len7: len9, }]} >
+                                <Text style={{ color: "white", fontSize: 14, fontFamily:'Montserrat-Regular' }} >{totale + '€'}</Text>
                             </View>
                         </View>
                         <View style={styles.rigeSeparate}>
                             <Text style={[styles.parola, { marginBottom: 20 }]}>Quota</Text>
-                            <View style={[styles.valore, { backgroundColor: '#1D1D1D', marginBottom: 20, borderColor: coloreQuota }]} >
-                                <Text style={{ color: "white", fontSize: 14, }} >{quotaxPers + '€'}</Text>
+                            <View style={[styles.valore, { backgroundColor: '#1D1D1D', marginBottom: 20, borderColor: coloreQuota, width: conto.toString().length<=5 ? len5: conto.toString().length<8 ? len7: len9, }]} >
+                                <Text style={{ color: "white", fontSize: 14, fontFamily:'Montserrat-Regular' }} >{quotaxPers + '€'}</Text>
                             </View>
                         </View>
                     </View>
                 </View>
                 <View style={{ backgroundColor: '#1D1D1D' }} >
                     <View style={{ borderTopLeftRadius: 14, borderTopRightRadius: 14, backgroundColor: '#222222', }}>
-                        <Text style={{ marginBottom: 10, marginTop: 20, color: 'white', fontSize: 16, marginLeft: 20 }}>Numero di persone</Text>
+                        <Text style={{ marginBottom: 10, marginTop: 20, color: 'white', fontSize: 16, marginLeft: 20, fontFamily:'Montserrat-Regular' }}>Numero di persone</Text>
                         <Slider
                             minimumValue={2}
                             maximumValue={20}
@@ -198,14 +202,14 @@ const ConfigureScreen = ({ route }) => {
                             thumbTintColor="#54D169"
                             value={persone}
                             onValueChange={handleValueChange}
-                            style={{ width: '100%', }}
+                            style={{ width: '100%', fontFamily:'Montserrat-Regular' }}
                             tapToSeek='true'
                         />
                         <View style={styles.rigeSeparate}>
-                            <Text style={{ color: 'white', fontSize: 12, marginLeft: 17 }}>2</Text>
-                            <Text style={{ color: 'white', fontSize: 12, marginRight: 15 }}>20</Text>
+                            <Text style={{ color: 'white', fontSize: 12, marginLeft: 17, fontFamily:'Montserrat-Regular' }}>2</Text>
+                            <Text style={{ color: 'white', fontSize: 12, marginRight: 15, fontFamily:'Montserrat-Regular' }}>20</Text>
                         </View>
-                        <Text style={{ marginBottom: 20, marginTop: 5, color: 'white', fontSize: 16, marginLeft: 20 }}>Mancia</Text>
+                        <Text style={{ marginBottom: 20, marginTop: 5, color: 'white', fontSize: 16, marginLeft: 20, fontFamily:'Montserrat-Regular' }}>Mancia</Text>
                         <View style={[styles.container2, { paddingBottom: 15 }]}>
                             {vettFilter.map((item, i) => {
                                 return (
@@ -218,7 +222,7 @@ const ConfigureScreen = ({ route }) => {
                                                 justifyContent: 'center',
                                                 borderWidth: 1, borderColor: 'white'
                                             }}>
-                                            <Text style={{ color: 'white', fontSize: 14 }}>
+                                            <Text style={{ color: 'white', fontSize: 14, fontFamily:'Montserrat-Regular' }}>
                                                 {item.val}%
                                             </Text>
                                         </View>
@@ -255,22 +259,24 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
         marginBottom: 25,
-        marginTop: 25
+        marginTop: 25,
+        fontFamily:'Montserrat-Regular'
     }
     , valore: {
         borderRadius: 20,
         marginRight: 20,
         padding: 2,
         borderWidth: 1,
-        width: 67,
         height: 29,
         alignItems: 'center',
+        paddingVertical: 4
     },
     parola: {
         color: 'white',
         fontSize: 16,
         alignSelf: 'center',
-        marginLeft: 20
+        marginLeft: 20,
+        fontFamily:'Montserrat-Regular'
     },
     rigeSeparate: {
         flexDirection: 'row',
@@ -290,7 +296,8 @@ const styles = StyleSheet.create({
     menuItemText: {
         fontSize: 16,
         color: 'white',
-        paddingVertical: 7
+        paddingVertical: 7,
+        fontFamily:'Montserrat-Regular'
     },
     container2: {
         flexDirection: 'row',

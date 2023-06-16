@@ -7,14 +7,16 @@ const BottoniScorrimento = ({ conto, navigation, setConto }) => {
     const [isSubmittedConfig, setIsSubmittedConfig] = useState(false);
 
     const toggleIsSubmittedConfig = () => {
-        setIsSubmittedConfig(value => !value);
+        setIsSubmittedConfig(true);
+        console.log(isSubmittedConfig);
       };
     
     useEffect(() => {
     if (isSubmittedConfig === true) {
         setConto(filtered);
         navigation.setParams({conto : String(filtered)});
-        navigation.navigate('configure', { conto: conto}); 
+        navigation.navigate('configure', { conto: conto});
+        setIsSubmittedConfig(false);
     }
     }, [isSubmittedConfig]);
 
@@ -25,10 +27,16 @@ const BottoniScorrimento = ({ conto, navigation, setConto }) => {
     }, []);
     let filtered = conto;
 
+    if( (parseFloat(conto).toString().length>8 && (conto.includes(".") || conto.includes(","))) || (parseFloat(conto).toString().length>6 && (!conto.includes(".") && !conto.includes(","))) ) {
+        segnoMeno = true;
+        filtered = 0;
+    }
+
     if(isNaN(conto) || conto ==" "){
         segnoMeno = true;
                 filtered = 0;
     }
+
     if(conto.includes("-")){
         segnoMeno = true;
         filtered = 0;
@@ -86,7 +94,7 @@ const BottoniScorrimento = ({ conto, navigation, setConto }) => {
     
     const handlePress = () => {
         Alert.alert(
-          'Errore di formato',
+          'Errore di formato o conto troppo alto',
           'scrivi il conto correttamente per continuare',
           [
             { text: 'OK', onPress: () => {} },
@@ -123,13 +131,15 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlignVertical: 'auto',
         textAlign: 'center',
-        paddingTop: 7
+        paddingTop: 9,
+        fontFamily:'Montserrat-Regular'
     },
     tutorial: {
         color: 'white',
         fontSize: 16,
         textAlign: 'center',
-        paddingTop: 25
+        paddingTop: 25,
+        fontFamily:'Montserrat-Regular'
     },
     menuItem: {
         marginTop: 44,
